@@ -1,5 +1,6 @@
 package files;
 import java.io.BufferedReader;
+import java.util.ArrayList;
 
 public class FileInfoReader {
     
@@ -8,10 +9,11 @@ public class FileInfoReader {
      * @param fileName = name of file
      * @return an array containing all the courses
      */
-    public String[] readFromCourseFile(String fileName) {
-        String[] allCourses = new String[0];
+    public ArrayList<Course> readFromCourseFile(String fileName) {
+        ArrayList<Course> allCourses = new ArrayList<Course>();
         try {
-            int 
+            int count = this.getCountOfCourses(filename);
+//            allCourses = new String[count];
         }
     }
 }
