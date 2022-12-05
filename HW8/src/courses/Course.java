@@ -9,8 +9,10 @@ public class Course {
     private String ProfName;
     // the day of class (MTWRF)
     private String DayofClass;
-    // time of class
-    private String Time;
+    // start time of class
+    private String StartTime;
+    // end of class
+    private String EndTime;
     // time of class in terms of number, for comparison
     private double TimeinNum;
     // size of class
@@ -25,12 +27,13 @@ public class Course {
      * @param Time:       a string
      * @param ClassSize:  an int */
     public Course(String CourseCode, String CourseName, String ProfName, String DayofClass,
-        String Time, int ClassSize) {
+        String StartTime, String EndTime, int ClassSize) {
         this.CourseCode= CourseCode;
         this.CourseName= CourseName;
         this.ProfName= ProfName;
         this.DayofClass= DayofClass;
-        this.Time= Time;
+        this.StartTime= StartTime;
+        this.EndTime= EndTime;
         this.ClassSize= ClassSize;
 
     }
@@ -67,9 +70,16 @@ public class Course {
 
     /** getter method for time
      *
-     * @return: the time of class in string */
-    public String getTimeinString() {
-        return Time;
+     * @return: the start time of class in string */
+    public String getStartTimeinString() {
+        return StartTime;
+    }
+
+    /** getter method for time
+     *
+     * @return: the end time of class in string */
+    public String getEndTimeinString() {
+        return EndTime;
     }
 
     /** getter method for time in number form
@@ -118,14 +128,15 @@ public class Course {
     /** a method that sets the value of time in string
      *
      * @param: a string that represents the time */
-    public void setTime(String x) {
-        Time= x;
+    public void setTime(String x, String y) {
+        StartTime= x;
+        EndTime= y;
     }
 
     /** a helper method that translate any time in string into a comparable double
      *
      * @param a string */
-    public double TimeToNum(String x) {
+    public double TimeToNum(String Start, String end) {
         // TODO
         return 0;
     }
@@ -134,7 +145,7 @@ public class Course {
      *
      * @param: a string */
     public void setTimeinNum() {
-        TimeinNum= TimeToNum(Time);
+        TimeinNum= TimeToNum(StartTime, EndTime);
     }
 
     /** a method that sets the value of ClassSize
@@ -142,6 +153,15 @@ public class Course {
      * @param: an int that represents the class size */
     public void setClassSize(int x) {
         ClassSize= x;
+    }
+
+    /** a print method that can print a course with all info with correct format
+     *
+     * @return a string */
+    public String print() {
+        String result= CourseCode + "; " + CourseName + "; " + ProfName + "; " + DayofClass + "; " +
+            StartTime + "; " + EndTime + "; " + ClassSize;
+        return result;
     }
 
 }
