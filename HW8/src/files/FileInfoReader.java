@@ -1,5 +1,7 @@
 package files;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileInfoReader {
@@ -14,6 +16,10 @@ public class FileInfoReader {
         try {
             int count = this.getCountOfCourses(filename);
 //            allCourses = new String[count];
+        }catch(FileNotFoundException e) {
+            e.printStackTrace();
+        }catch(IOException e) {
+            e.printStackTrace();
         }
     }
 }
