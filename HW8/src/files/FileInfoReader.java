@@ -1,8 +1,10 @@
 package files;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import courses.Course;
 
 public class FileInfoReader {
     
@@ -12,14 +14,84 @@ public class FileInfoReader {
      * @return an array containing all the courses
      */
     public ArrayList<Course> readFromCourseFile(String fileName) {
-        ArrayList<Course> allCourses = new ArrayList<Course>();
+        // initiate an ArrayList of Courses
+        ArrayList<Course> allCoursesObj = new ArrayList<Course>();
+        // initiate an array of strings
+        String[] allCoursesStr = new String[0];
         try {
             int count = this.getCountOfCourses(filename);
-//            allCourses = new String[count];
+            allCoursesStr = new String[count];
+            // populate both the arraylist and the array of string for later use
+            this.populateCourses(allCoursesObj, allCoursesStr, fileName);
+            // exception handling
         }catch(FileNotFoundException e) {
             e.printStackTrace();
         }catch(IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void populateCourses (ArrayList<Course> c, String[] CourseListString, String inputFile) throw IOException{
+        
+        // create buffer reader
+        BufferedReader br = new BufferedReader(new FileReader(inputFile));
+        // used to to populate String[] later
+        int index = 0;
+        String line = "";
+        while((line = br.readLine()) != null) {
+            // strip each line in case there are leading/ trailing white spaces
+            line = line.strip();
+            // if line is empty, skip it
+            if(!line.isEmpty()) {
+                // populate ArrayList c with a course obj made from each line of file
+                c.put(makeACourse(c));
+                // populate String[] with each line (strings) 
+                CourseListString[index] = line;
+                index++;
+            }
+        }
+    }
+    /**
+     * This function parse each line of info from courseinfo.txt and make a course obj 
+     * @param line
+     * @return a Course object
+     */
+    public Course makeACourse(String line) {
+        // split the line by ";"
+        String info[] = line.split(";");
+        // assign each field of a course as below:
+        String CourseCode = info[0].strip();
+        String CourseName = info[1].strip();
+        String ProfName = info[2].strip();
+        String DayofClass = info[3].strip();
+        String Time = info[4].strip();
+        int ClassSize = Integer.parseInt(info[5].strip());
+        // make a course obj
+        Course result = Course(CourseCode, CourseName, ProfName,DayofClass,Time, ClassSize);
+        return result;
+    }
+    /**
+     * Get the count of lines in the given file
+     * @param inputFile to read
+     * @return count of (lines)
+     * @throws IOException if I/O error occurs     */
+    public int getCountOfCourses(String inputFile) throws IOException {
+
+        //create buffered reader
+        BufferedReader br = new BufferedReader(new FileReader(inputFile));
+
+        int count = 0;
+
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            line = line.strip();
+            if (!line.isEmpty()) {
+                count++;
+            }
+        }
+
+        br.close();
+
+        return count;
     }
 }
