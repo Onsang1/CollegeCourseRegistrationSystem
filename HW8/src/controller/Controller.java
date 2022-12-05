@@ -9,7 +9,7 @@ public class Controller {
     public static void main(String[] args) {
 
         FileInfoReader reader= new FileInfoReader();
-        // randomly place 10 ships in ocean, 1 battleship, 2 cruiser, 3 destroyer, and 4 submarines
+
         reader.readFromCourseFile("courseInfo.txt");
         String[] result= reader.getCourseStr();
 //        for (String a : result) {
