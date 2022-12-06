@@ -13,6 +13,9 @@ public class Controller {
 //        for (Course c : reader.getCourseObj()) {
 //            System.out.println(c.print());
 //        }
+        System.out.println(reader.getCourseObj().get(0).getStartTimeinNum());
+        System.out.println(reader.getCourseObj().get(0).getEndTimeinNum());
+        System.out.println(reader.getCourseObj().get(0).getDuration());
 
         // way of printing students
         FileInfoReader reader2= new FileInfoReader();
