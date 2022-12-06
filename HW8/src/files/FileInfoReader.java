@@ -261,30 +261,30 @@ public class FileInfoReader {
         return student;
     }
 
-    /** Get the count of lines in the given file
-     *
-     * @param inputFile to read
-     * @return count of (lines)
-     * @throws IOException if I/O error occurs */
-    private int getCountOfLines(String inputFile) throws IOException {
-
-        // create buffered reader
-        BufferedReader br= new BufferedReader(new FileReader(inputFile));
-
-        int count= 0;
-
-        String line= "";
-        while ((line= br.readLine()) != null) {
-            line= line.strip();
-            if (!line.isEmpty()) {
-                count++ ;
-            }
-        }
-
-        br.close();
-
-        return count;
-    }
+//    /** Get the count of lines in the given file
+//     *
+//     * @param inputFile to read
+//     * @return count of (lines)
+//     * @throws IOException if I/O error occurs */
+//    private int getCountOfLines(String inputFile) throws IOException {
+//
+//        // create buffered reader
+//        BufferedReader br= new BufferedReader(new FileReader(inputFile));
+//
+//        int count= 0;
+//
+//        String line= "";
+//        while ((line= br.readLine()) != null) {
+//            line= line.strip();
+//            if (!line.isEmpty()) {
+//                count++ ;
+//            }
+//        }
+//
+//        br.close();
+//
+//        return count;
+//    }
 
     // Getter Methods
     /** return the arraylist with all courses in obj form

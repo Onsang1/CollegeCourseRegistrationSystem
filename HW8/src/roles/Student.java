@@ -1,11 +1,15 @@
 package roles;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Student extends User {
+    // the type of user
     private static final String USERTYPE= "Student";
-
+    // the Grades in an ArrayList of String for printing
     private ArrayList<String> Grades= new ArrayList<>();
+    // the grades in a hashmap
+    private HashMap<String, String> GradeMap= new HashMap<>();
 
     /** constructor for Student
      *
@@ -17,6 +21,8 @@ public class Student extends User {
         ArrayList<String> grade) {
         super(username, password, ID, name);
         Grades= grade;
+        setGradeMap(Grades);
+
     }
 
     /** return the user type in String */
@@ -41,6 +47,24 @@ public class Student extends User {
     /** set the student's grade in ArrayList */
     public void setGrades(ArrayList<String> x) {
         Grades= x;
+    }
+
+    private void setGradeMap(ArrayList<String> x) {
+        for (String s : Grades) {
+            String info[]= s.split(":");
+            GradeMap.put(info[0].strip(), info[1].strip());
+        }
+    }
+
+    // GETTER METHODS
+    /** get the student's grade (in ArrayList) */
+    public ArrayList<String> getGrades() {
+        return Grades;
+    }
+
+    /** get the student's grade (in HashMap) */
+    public HashMap<String, String> getGradesInMap() {
+        return GradeMap;
     }
 
 }
