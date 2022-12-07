@@ -22,36 +22,111 @@ public class Controller {
     }
 
     public void run(FileInfoReader reader) {
-
-        System.out.println("--------------------------");
-        System.out.println("Students Management System");
-        System.out.println("--------------------------");
-        System.out.println("1 -- Login as a student");
-        System.out.println("2 -- Login as a professor");
-        System.out.println("3 -- Login as an admin");
-        System.out.println("4 -- Quit the system");
-        System.out.println("\n");
-        Scanner scanner= new Scanner(System.in);
         boolean QuitTheSystem= false;
-        while (!QuitTheSystem) {
+        do {
+            System.out.println("--------------------------");
+            System.out.println("Students Management System");
+            System.out.println("--------------------------");
+            System.out.println("1 -- Login as a student");
+            System.out.println("2 -- Login as a professor");
+            System.out.println("3 -- Login as an admin");
+            System.out.println("4 -- Quit the system");
+            System.out.println("\n");
+            Scanner scanner= new Scanner(System.in);
+//            boolean QuitTheSystem= false;
+//            while (!QuitTheSystem) {
             int LoginType= askForNum("Please enter your option, e.g. '1'", scanner, 1, 4);
             // if input = 1, 2, or 3
             if (LoginType != 4) {
                 // if user is a student
                 if (LoginType == 1) {
-                    if (!StudentLogin(scanner, reader)) { run(reader); }
+//                    if (!StudentLogin(scanner, reader)) { run(reader); }
+                    StudentLogin(scanner, reader);
                 } else if (LoginType == 2) {
-                    // if (!ProfessorLogin(scanner)) { run(); }
-                } else if (LoginType == 3) { if (!AdminLogin(scanner, reader)) { run(reader); } }
-            }
+//                    if (!ProfessorLogin(scanner, reader)) { run(reader); }
+                    ProfessorLogin(scanner, reader);
 
-            if (LoginType == 4) {
+                } else if (LoginType == 3) {
+//                    if (!AdminLogin(scanner, reader)) { run(reader); }
+                    AdminLogin(scanner, reader);
+                }
+            } else {
                 QuitTheSystem= true;
                 System.out.println("Quitted Successfully.");
-            }
-        }
-        scanner.close();
+                scanner.close();
 
+            }
+//            }
+        } while (!QuitTheSystem);
+
+    }
+
+    /** This is the function handling a professor trying to log in
+     *
+     * @param scanner: the scanner
+     * @param reader:  the reader
+     * @return a boolean indicating quitting this professor menu */
+    private static boolean ProfessorLogin(Scanner scanner, FileInfoReader reader) {
+        // store username
+        String username= askForString("Please enter your username, or type 'q' to quit", scanner);
+        if (username.equals("q")) { return false; }
+        // store password
+        String password= askForString("Please enter your password, or type 'q' to quit", scanner);
+        if (password.equals("q")) { return false; }
+
+        // find our Student object
+        Professor ourProf= checkProfLogin(reader.getProfObj(), username, password);
+        if (ourProf != null) {
+            boolean loopContinues= true;
+            while (loopContinues) {
+                printMenus(3, username);
+                int answer= askForNum("Please enter your option, e.g. '1'.", scanner, 1, 3);
+//                System.out.println("Line 72:" + answer);
+                if (answer != 3) {
+                    // 1 -- View all courses
+                    if (answer == 1) {
+//                        System.out.println("Testing testing");
+                        for (Course c : ourProf.getGivenCourses(reader.getCourseObj())) {
+                            System.out.println(c.print());
+                        }
+                        // 2 -- Add courses to your list
+                    } else if (answer == 2) {
+                        boolean enterID= true;
+                        // prompt the user
+                        do {
+                            String CourseID= askForString(
+                                "Please enter the CourseID. e.g. CIT590, or type 'q' to quit",
+                                scanner);
+                            if (CourseID.equals("q")) { break; }
+                            // TODO
+                            Course courseToView= checkCourseToAdd(reader.getCourseObj(), CourseID);
+                            // if the prof entered a course with valid course code
+                            if (CourseID != null) {
+                                ArrayList<Student> students= ourProf.getStudentList(courseToView,
+                                    reader.getStudentObj());
+                                for (Student s : students) {
+                                    System.out.println(s.getID() + " " + s.getName());
+                                }
+                                enterID= false;
+                            }
+                        } while (enterID);
+
+                        // 3 -- View enrolled courses
+                    }
+
+                    // if answer == 6: quit to main menu
+                } else {
+                    loopContinues= false;
+                }
+            }
+            // if the student entered wrong combination of username and passwords
+        } else {
+            System.out
+                .println("Your username and password combination is wrong. Please try again!");
+            return StudentLogin(scanner, reader);
+        }
+//        System.out.println("Line 104 reached");
+        return false;
     }
 
     private static boolean AdminLogin(Scanner scanner, FileInfoReader reader) {
@@ -114,9 +189,11 @@ public class Controller {
                         if (lecturerId.equals("q")) { return false; }
                         // check if professor exists
                         boolean ProfExists= professorExists(lecturerId, reader.getProfObj());
-                        if (ProfExists) {}
+
                         // if ProfExists = false, create a new prof
-                        else {
+                        if (!ProfExists) {
+
+                        } else {
 
                         }
 //                        ourAdmin.addNewCourse(null, null, professorExist(),
@@ -226,13 +303,33 @@ public class Controller {
             System.out.println("7 -- Delete a student");
             System.out.println("8 -- return to previous menu");
 
+        } else if (type == 3) {
+            System.out.println("1 -- View given courses");
+            System.out.println("2 -- View student list of the given courses");
+            System.out.println("3 -- Return to the previous menu");
+
         }
+    }
+
+    /** This function check if the professor with the username and password exist
+     *
+     * @param list
+     * @param username
+     * @param password
+     * @return */
+    private static Professor checkProfLogin(ArrayList<Professor> list, String username,
+        String password) {
+        for (Professor s : list) {
+            if (s.getUserName().equals(username) && s.getPassword().equals(password)) { return s; }
+        }
+        return null;
     }
 
     /** This function check if the admin with the username and password exist
      *
      * @param list
      * @param username
+     * @param password
      * @return */
     private static Admin checkAdminLogin(ArrayList<Admin> list, String username,
         String password) {
@@ -246,6 +343,7 @@ public class Controller {
      *
      * @param list
      * @param username
+     * @param password
      * @return */
     private static Student checkStudentLogin(ArrayList<Student> list, String username,
         String password) {
