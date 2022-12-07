@@ -24,7 +24,7 @@ class ProfessorTest {
 	@BeforeEach
 	void setUp() throws Exception {
         //initialize professor
-		professor = new Professor("Clayton Greenberg", "001", "Greenberg", "password590");
+		professor = new Professor("Greenberg", "password", "001", "Clayton Greenberg");
 		reader.readFromCourseFile("courseInfo.txt");
 		reader2.readFromStudentFile("studentInfo.txt");
 		courseInfo = reader.getCourseObj();
@@ -33,6 +33,8 @@ class ProfessorTest {
 
 	@Test
 	void testgetGivenCourses() {
+		System.out.println("testgetgivencourse");
+		System.out.println(professor.getName());
 		//test if the two courses that professor Clayton Greenberg teach have been included
 		Course CIT592 = new Course("CIT592", "Mathematical Foundations of Computer Science", "Clayton Greenberg", "TR", "10:00", "11:00", 72);
 		assertEquals(CIT592.getCourseCode(), professor.getGivenCourses(courseInfo).get(0).getCourseCode());
@@ -43,6 +45,8 @@ class ProfessorTest {
 		//test if the course that professor Clayton Greenberg doesn't teach have been included
 		Course CIT902 = new Course("CIT901", "Course", "new professor", "TR", "10:30", "11:30", 72);
 		assertFalse(professor.getGivenCourses(courseInfo).contains(CIT902));
+		
+		System.out.println(professor.getUserName());
 	}
 	
 	@Test
