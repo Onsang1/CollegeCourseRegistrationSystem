@@ -18,17 +18,22 @@ class ProfessorTest {
 	Student student;
 	FileInfoReader reader= new FileInfoReader();
 	FileInfoReader reader2= new FileInfoReader();
+	FileInfoReader reader3= new FileInfoReader();
 	ArrayList<Course> courseInfo;
 	ArrayList<Student> studentInfo;
+	ArrayList<Professor> profInfo;
 
 	@BeforeEach
 	void setUp() throws Exception {
         //initialize professor
-		professor = new Professor("Greenberg", "password", "001", "Clayton Greenberg");
+		//professor = new Professor("Greenberg", "password", "001", "Clayton Greenberg");
 		reader.readFromCourseFile("courseInfo.txt");
 		reader2.readFromStudentFile("studentInfo.txt");
+		reader3.readFromProfFile("profInfo.txt");
 		courseInfo = reader.getCourseObj();
 		studentInfo = reader2.getStudentObj();
+		profInfo = reader3.getProfObj();
+		professor = profInfo.get(0);
     }
 
 	@Test
@@ -36,11 +41,13 @@ class ProfessorTest {
 		System.out.println("testgetgivencourse");
 		System.out.println(professor.getName());
 		//test if the two courses that professor Clayton Greenberg teach have been included
-		Course CIT592 = new Course("CIT592", "Mathematical Foundations of Computer Science", "Clayton Greenberg", "TR", "10:00", "11:00", 72);
-		assertEquals(CIT592.getCourseCode(), professor.getGivenCourses(courseInfo).get(0).getCourseCode());
+		//Course CIT592 = new Course("CIT592", "Mathematical Foundations of Computer Science", "Clayton Greenberg", "TR", "10:00", "11:00", 72);
+		Course CIT592 = courseInfo.get(7);
+		assertEquals(CIT592.getCourseCode(), professor.getGivenCourses(courseInfo).get(1).getCourseCode());
 		
-		Course CIS105 = new Course("CIS105", "Computational Data Exploration", "Clayton Greenberg", "MWF", "10:00", "11:00", 60);
-		assertEquals(CIS105.getCourseCode(), professor.getGivenCourses(courseInfo).get(1).getCourseCode());
+		//Course CIS105 = new Course("CIS105", "Computational Data Exploration", "Clayton Greenberg", "MWF", "10:00", "11:00", 60);
+		Course CIS105 = courseInfo.get(2);
+		assertEquals(CIS105.getCourseCode(), professor.getGivenCourses(courseInfo).get(0).getCourseCode());
 		
 		//test if the course that professor Clayton Greenberg doesn't teach have been included
 		Course CIT902 = new Course("CIT901", "Course", "new professor", "TR", "10:30", "11:30", 72);
