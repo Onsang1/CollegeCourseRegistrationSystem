@@ -52,14 +52,14 @@ public class Admin extends User {
 	 * Add new courses
 	 * @return list of all courses
 	 */
-	public void addNewCourse(Course course, ArrayList<Course> courseInfo, Boolean professorExists, Boolean timeConflict) {
+	public ArrayList<Course> addNewCourse(Course course, ArrayList<Course> courseInfo, Boolean professorExists, Boolean timeConflict) {
 		if (courseInfo.contains(course)){
 			//if the course is in the courseInfo
 			System.out.println("The course already exist");
 		} else if (!professorExists) {
 			System.out.println("The professor isn't in the system, please add this professor first");
 		} else if (timeConflict) {
-			System.out.println("The new added course has time conflict with course");
+			System.out.println("The new added course has time conflict with course" + this.timeConflictCourse (course, courseInfo));
 			System.out.println("Unable to add new course: " + course.getCourseCode() + "|" + course.getCourseName() +
 					", " + course.getStartTimeinString() + "-" + course.getEndTimeinString() + " on " + course.getDayofClass() +
 					", with course capacity: " + course.getClassSize() + ", students:0, lecturer: Professor " + course.getProfName());
@@ -69,6 +69,7 @@ public class Admin extends User {
 					", " + course.getStartTimeinString() + "-" + course.getEndTimeinString() + " on " + course.getDayofClass() +
 					", with course capacity: " + course.getClassSize() + ", students:0, lecturer: Professor " + course.getProfName());
 		}
+		return courseInfo;
 		
 	}
 	
@@ -76,7 +77,7 @@ public class Admin extends User {
 	 * delete courses
 	 * @return list of all courses
 	 */
-	public void deleteCourse(Course course, ArrayList<Course> courseInfo) {
+	public ArrayList<Course> deleteCourse(Course course, ArrayList<Course> courseInfo) {
 		if(courseInfo.contains(course)){
 			//if the course is in the courseInfo
 			courseInfo.remove(course);
@@ -85,6 +86,7 @@ public class Admin extends User {
 			//else the course isn't in the courseInfo
 			System.out.println("The course doens't exists");
 		}
+		return courseInfo;
 	}
 	
 	
@@ -93,7 +95,7 @@ public class Admin extends User {
 	 * @param professor name
 	 * @return list of updated professor
 	 */
-	public void addProfessor(Professor professor, ArrayList<Professor> profInfo) {
+	public ArrayList<Professor> addProfessor(Professor professor, ArrayList<Professor> profInfo) {
 		//check if the ID and username already exists
 		int x = 0;
 		for(int i = 0; i < profInfo.size(); i++) {
@@ -114,15 +116,14 @@ public class Admin extends User {
 			profInfo.add(professor);
 			System.out.println("Successfully added the new professor: " + professor.getID() + " " + professor.getName());
 		}
-		return;
-		//return profInfo;
+		return profInfo;
 	}
 	
 	/**
 	 * delete professor
 	 * @param professor name
 	 */
-	public void deleteProfessor(Professor professor, ArrayList<Professor> profInfo) {
+	public ArrayList<Professor> deleteProfessor(Professor professor, ArrayList<Professor> profInfo) {
 		if(profInfo.contains(professor)){
 			//if the course is in the courseInfo
 			profInfo.remove(professor);
@@ -131,13 +132,14 @@ public class Admin extends User {
 			//else the course isn't in the courseInfo
 			System.out.println("The ID doesn't exists");
 		}
+		return profInfo;
 	}
 	
 	/**
 	 * Add new student
 	 * @param student name
 	 */
-	public void addStudent(Student student, ArrayList<Student> studentInfo) {
+	public ArrayList<Student> addStudent(Student student, ArrayList<Student> studentInfo) {
 		//check if the ID and username already exists
 		int x = 0;
 		for(int i = 0; i < studentInfo.size(); i++) {
@@ -158,7 +160,7 @@ public class Admin extends User {
 			studentInfo.add(student);
 			System.out.println("Successfully added the new student: " + student.getID() + " " + student.getName());
 		}
-		return;
+		return studentInfo;
 	}
 	
 	
@@ -166,7 +168,7 @@ public class Admin extends User {
 	 * delete student
 	 * @param student name
 	 */
-	public void deleteStudent(Student student, ArrayList<Student> studentInfo) {
+	public ArrayList<Student> deleteStudent(Student student, ArrayList<Student> studentInfo) {
 		if(studentInfo.contains(student)){
 			//if the course is in the courseInfo
 			studentInfo.remove(student);
@@ -175,6 +177,6 @@ public class Admin extends User {
 			//else the course isn't in the courseInfo
 			System.out.println("The ID doesn't exists");
 		}
-
+		return studentInfo;
 	}
 }
