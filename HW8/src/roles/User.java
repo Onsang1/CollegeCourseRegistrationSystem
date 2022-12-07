@@ -62,17 +62,80 @@ public abstract class User {
         return password;
     }
 
-//    /** in controller
-//     * return to the previous menu
-//     */
-//    public void returnToPrev() {
-//    	return to an object called menu;
-//    }
-
     /** View all courses
      *
      * @return list of all courses */
     public ArrayList<Course> viewAllCourses(ArrayList<Course> courseInfo) {
         return courseInfo;
+    }
+    
+    /**
+     * check if there is time conflict
+     * @param course
+     * @param courseInfo
+     * @return
+     */
+    public Boolean timeConflict (Course course, ArrayList<Course> courseInfo) {
+    	for (int i = 0; i < courseInfo.size(); i++) {
+    		//check if share the same getDayofClass
+    		if ((course.getDayofClass().contains(courseInfo.get(i).getDayofClass())) || (courseInfo.get(i).getDayofClass()).contains(course.getDayofClass())) {
+    			if ((course.getStartTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getStartTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
+    				return true;
+    			} else if ((course.getEndTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getEndTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
+    				return true;
+    			}
+    		} 
+    	}
+    	return false;
+    }
+    
+    /**
+     * find the course that conflict with current course
+     * @param course
+     * @param courseInfo
+     * @return course that conflicted
+     */
+    public Course timeConflictCourse (Course course, ArrayList<Course> courseInfo) {
+    	for (int i = 0; i < courseInfo.size(); i++) {
+    		if ((course.getDayofClass().contains(courseInfo.get(i).getDayofClass())) || (courseInfo.get(i).getDayofClass()).contains(course.getDayofClass())) {
+    			if ((course.getStartTimeinNum() >= courseInfo.get(i).getStartTimeinNum()) && (course.getStartTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
+    				return courseInfo.get(i);
+    			} else if ((course.getEndTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getEndTimeinNum() <= courseInfo.get(i).getEndTimeinNum())) {
+    				return courseInfo.get(i);
+    			}
+    		} 
+    	}
+    	return null;
+    }
+    
+    
+    /**
+     * find course object according to courseID
+     * @param courseID
+     * @param courseInfo
+     * @return
+     */
+    public Course findCourseAccordingID (String courseID, ArrayList<Course> courseInfo) {
+    	for (int i = 0; i < courseInfo.size(); i++) {
+    		if (courseInfo.get(i).getCourseCode().equals(courseID)) {
+    			return courseInfo.get(i);
+    		}
+    	}
+    	return null;
+    }
+    
+    /**
+     * find professor according to profID
+     * @param courseID
+     * @param courseInfo
+     * @return
+     */
+    public Professor findProfAccordingID (String profID, ArrayList<Professor> profInfo) {
+    	for (int i = 0; i < profInfo.size(); i++) {
+    		if (profInfo.get(i).getID().equals(profID)) {
+    			return profInfo.get(i);
+    		}
+    	}
+    	return null;
     }
 }
