@@ -111,10 +111,9 @@ public class Controller {
                             }
                         } while (enterID);
 
-                        // 3 -- View enrolled courses
                     }
 
-                    // if answer == 6: quit to main menu
+                    // if answer == 3: quit to main menu
                 } else {
                     loopContinues= false;
                 }
