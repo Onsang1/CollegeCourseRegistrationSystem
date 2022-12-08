@@ -129,92 +129,124 @@ public class Controller {
     }
 
     private static boolean AdminLogin(Scanner scanner, FileInfoReader reader) {
-        Admin ourAdmin= null;
-        boolean loopcontinues= true;
-        do {
-            // Store username and password
-            String username= askForString("Please enter your username, or type 'q' to quit",
-                scanner);
-            if (username.equals("q")) { return false; }
-            // store password
-            String password= askForString("Please enter your password, or type 'q' to quit",
-                scanner);
-            if (password.equals("q")) { return false; }
 
-            // find our admin object
-            ourAdmin= checkAdminLogin(reader.getAdminObj(), username, password);
+        // Store username and password
+        String username= askForString("Please enter your username, or type 'q' to quit",
+            scanner);
+        if (username.equals("q")) { return false; }
+        // store password
+        String password= askForString("Please enter your password, or type 'q' to quit",
+            scanner);
+        if (password.equals("q")) { return false; }
 
-            if (ourAdmin != null) {
+        Admin ourAdmin= checkAdminLogin(reader.getAdminObj(), username, password);
+        if (ourAdmin != null) {
+            boolean loopcontinues= true;
+            while (loopcontinues) {
+
                 printMenus(2, username);
                 int answer= askForNum("Please enter your option, e.g. '1'.", scanner, 1, 8);
+                // if answers = 1 - 7
                 if (answer != 8) {
-                    // view all courses
+                    // 1 - View all courses
                     if (answer == 1) {
                         for (Course c : reader.getCourseObj()) {
                             System.out.println(c.print());
                         }
+                        // if answer = 2 - Add new courses
                     } else if (answer == 2) {
-                        // check if the course exists
+//                      // check if the course exists
                         String CourseID= AdminAddCourse(reader,
                             "Please enter the course ID, or type 'q' to quit. e.g. 'CIT800'",
                             scanner);
-                        if (CourseID.equals("q")) { return false; }
-
+                        if (CourseID.equals("q")) { continue; }
                         String name= askForString(
                             "Please enter the course name, or type 'q' to quit. e.g. 'Java' ",
                             scanner);
-                        if (name.equals("q")) { return false; }
+                        if (name.equals("q")) { continue; }
                         String startTime= askForString(
                             "Please enter the course start time, or type 'q' to quit. e.g. '20:00'",
                             scanner);
-                        if (startTime.equals("q")) { return false; }
+                        if (startTime.equals("q")) { continue; }
                         String endTime= askForString(
                             "Please enter the course end time, or type 'q' to quit. e.g. '21:00'",
                             scanner);
-                        if (endTime.equals("q")) { return false; }
+                        if (endTime.equals("q")) { continue; }
                         String date= askForString(
-                            "Please enter the course date, or type 'q' to quit. e.g. 'MW'",
+                            "Please enter the course end time, or type 'q' to quit. e.g. '21:00'",
                             scanner);
-                        if (endTime.equals("q")) { return false; }
+                        if (date.equals("q")) { continue; }
                         String capacity= askForString(
                             "Please enter the course capacity, or type 'q' to quit. e.g. '72'",
                             scanner);
-                        if (capacity.equals("q")) { return false; }
-                        // if capacity != 'q', we turn it into an integer
-                        Integer.parseInt(capacity);
+                        if (capacity.equals("q")) { continue; }
+                        int classSize= Integer.parseInt(capacity);
                         String lecturerId= askForString(
                             "Please enter the course lecturer's id, or type 'q' to quit. e.g. '001'",
                             scanner);
-                        if (lecturerId.equals("q")) { return false; }
-                        // check if professor exists
+                        if (lecturerId.equals("q")) { continue; }
+                        // 1. check if professor exists
                         boolean ProfExists= professorExists(lecturerId, reader.getProfObj());
+                        if (ProfExists) {
+                            // get the existing professor
+                            Professor prof= getProfByID(reader.getProfObj(), lecturerId);
+                            // 2. check if the course conflicts with other courses that the prof is
+                            // teaching
+                            ArrayList<Course> currentCourse= prof
+                                .getGivenCourses(reader.getCourseObj());
+                            Course courseToAdd= new Course(CourseID, name, prof.getName(), date,
+                                startTime, endTime, classSize);
+                            // if no conflict
+                            if (!prof.timeConflict(courseToAdd, currentCourse)) {
+                                // add the course to the db
+                                ourAdmin.addNewCourse(courseToAdd, reader.getCourseObj(), true,
+                                    false);
 
-                        // if ProfExists = false, create a new prof
-                        if (!ProfExists) {
+                                // if there is a time Conflict
+                            } else {
+                                ourAdmin.addNewCourse(courseToAdd, reader.getCourseObj(), true,
+                                    true);
 
+                            }
+                            // if professor doesn't exist, create a new prof
                         } else {
+                            Professor newProf;
+                            newProf= AdminCreateProf(reader, scanner);
+                            if (newProf == null) {
+                                continue;
+                            } else {
+                                Course courseToAdd2= new Course(CourseID, name, newProf.getName(),
+                                    date,
+                                    startTime, endTime, classSize);
+                                if (!newProf.timeConflict(courseToAdd2,
+                                    newProf.getGivenCourses(reader.getCourseObj()))) {
+                                    ourAdmin.addNewCourse(courseToAdd2, reader.getCourseObj(), true,
+                                        false);
+                                } else {
+                                    ourAdmin.addNewCourse(courseToAdd2, reader.getCourseObj(), true,
+                                        true);
+                                }
+                            }
 
                         }
-//                        ourAdmin.addNewCourse(null, null, professorExist(),
-//                            null);
+                        // 3 -- Delete courses
+                    } else if (answer == 3) {
 
                     }
-
-                    // if answer == 8
+                    // answer == 8
                 } else {
                     loopcontinues= false;
-
                 }
 
-                // if ourAdmin == null
-            } else {
-                System.out
-                    .println("Your username and password combination is wrong. Please try again!");
             }
+        } else {
+            System.out
+                .println("Your username and password combination is wrong. Please try again!");
+            return AdminLogin(scanner, reader);
 
-        } while (loopcontinues);
+        }
+
         return false;
-
     }
 
     private static boolean StudentLogin(Scanner scanner, FileInfoReader reader) {
@@ -324,6 +356,19 @@ public class Controller {
         return null;
     }
 
+    /** This function gets the Prof with the given id
+     *
+     * @param list
+     * @param username
+     * @param password
+     * @return */
+    private static Professor getProfByID(ArrayList<Professor> list, String ID) {
+        for (Professor s : list) {
+            if (s.getID().equals(ID)) { return s; }
+        }
+        return null;
+    }
+
     /** This function check if the admin with the username and password exist
      *
      * @param list
@@ -406,12 +451,19 @@ public class Controller {
         return null;
     }
 
+    /** return a String of course code (check if course is already in list; if so prompt again
+     *
+     * @param reader:  a FileInfoReader
+     * @param prompt:  a string
+     * @param scanner: a scanner
+     * @return: a string of course code (valid) */
     private static String AdminAddCourse(FileInfoReader reader, String prompt, Scanner scanner) {
         boolean loop= true;
         String answer;
         do {
             answer= askForString(prompt, scanner);
-            if (checkCourseToAdd(reader.getCourseObj(), answer) != null) {
+            if (answer.equals("q")) loop= false;
+            else if (checkCourseToAdd(reader.getCourseObj(), answer) != null) {
                 loop= false;
             } else {
                 System.out.println(
@@ -420,6 +472,47 @@ public class Controller {
 
         } while (loop);
         return answer;
+    }
+
+    /** return a new Professor
+     *
+     * @param reader:  a FileInfoReader
+     * @param prompt:  a string
+     * @param scanner: a scanner
+     * @return: a string of course code (valid) */
+    private static Professor AdminCreateProf(FileInfoReader reader, Scanner scanner) {
+        boolean loop= true;
+        String ID;
+        Professor newProf;
+        do {
+            ID= askForString("Please enter the professor's ID, or type 'q' to quit. ", scanner);
+            if (ID.equals("q")) {
+                loop= false;
+                break;
+            }
+            // the case where prof already exists
+            if (professorExists(ID, reader.getProfObj())) {
+                System.out.println(
+                    "This professor already exists in the system, please enter a new prof to add only.");
+
+                // make certain that the professor doesn't exist in db yet
+            } else {
+                String name= askForString("Enter their full name or type 'q' to quit", scanner);
+                if (name.equals("q")) {
+                    loop= false;
+                    break;
+                } else {
+                    String username= askForString("Enter a username", scanner);
+                    String password= askForString("Enter a password", scanner);
+
+                    newProf= new Professor(username, password, ID, name);
+                    loop= false;
+                    return newProf;
+                }
+            }
+
+        } while (loop);
+        return null;
     }
 
     /** Asks the user for a number to log in to the system . Prompts again if the user input is not
