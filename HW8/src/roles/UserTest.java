@@ -12,6 +12,12 @@ import courses.Course;
 import files.FileInfoReader;
 import courses.Course;
 
+/**
+ * This tests the functions for users
+ * @author Onsang Yau, jingzhuo Hu
+ *
+ */
+
 class UserTest {
 
 	User user;
