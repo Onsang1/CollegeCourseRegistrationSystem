@@ -1,144 +1,188 @@
 package roles;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import roles.User;
 import courses.Course;
-import files.FileInfoReader;
 
 /**
- * This is the test file for admin
+ * This class describes the function for admin
  * @author Onsang Yau, Jingzhuo Hu
- *
  */
-class AdminTest {
+public class Admin extends User {
+	private static final String USERTYPE= "Admin";
 
-	Admin admin;
-	FileInfoReader reader= new FileInfoReader();
-	FileInfoReader reader2= new FileInfoReader();
-	FileInfoReader reader3= new FileInfoReader();
-	ArrayList<Course> courseInfo;
-	ArrayList<Student> studentInfo;
-	ArrayList<Professor> profInfo;
+    /** constructor for Admin
+     *
+     * @param username
+     * @param password
+     * @param ID
+     * @param name */
+    public Admin(String username, String password, String ID, String name) {
+        super(username, password, ID, name);
+    }
 
-	@BeforeEach
-	void setUp() throws Exception {
-        //initialize professor
-		admin = new Admin("001", "admin", "admin01", "password590");
-		reader.readFromCourseFile("courseInfo.txt");
-		reader2.readFromStudentFile("studentInfo.txt");
-		reader3.readFromProfFile("profInfo.txt");
-		courseInfo = reader.getCourseObj();
-		studentInfo = reader2.getStudentObj();
-		profInfo = reader3.getProfObj();
+    /** return the user type in String */
+    @Override
+    public String getUserType() {
+        return USERTYPE;
+    }
+
+    /** return a string form of printout */
+    @Override
+    public String print() {
+        String output= getID() + "; " + getName() + "; " + getUserName() + "; " + getPassword();
+        //System.out.println(getName());
+        return output;
+    }
+    
+    /**
+     * check if the professor is already in the profInfo
+     * @param professor
+     * @param profInfo
+     * @return
+     */
+    public Boolean professorExists(Professor professor, ArrayList<Professor> profInfo) {
+    	if(profInfo.contains(professor)) {
+    		return true;
+    	}
+    	return false;
     }
 	
-	@Test
-	void testprofessorExists() {
-		System.out.println("test professorExists");
-		// a condition that professor exists
-		Professor professor4 = profInfo.get(0);
-		assertTrue(admin.professorExists(professor4, profInfo));
+	/**
+	 * Add new courses
+	 * @return list of all courses
+	 */
+	public ArrayList<Course> addNewCourse(Course course, ArrayList<Course> courseInfo, Boolean professorExists, Boolean timeConflict) {
+		if (courseInfo.contains(course)){
+			//if the course is in the courseInfo
+			System.out.println("The course already exist");
+		} else if (!professorExists) {
+			//if the professor doesn't exists
+			System.out.println("The professor isn't in the system, please add this professor first");
+		} else if (timeConflict) {
+			//if time conflict exists
+			System.out.println("The new added course has time conflict with course" + this.timeConflictCourse (course, courseInfo));
+			System.out.println("Unable to add new course: " + course.getCourseCode() + "|" + course.getCourseName() +
+					", " + course.getStartTimeinString() + "-" + course.getEndTimeinString() + " on " + course.getDayofClass() +
+					", with course capacity: " + course.getClassSize() + ", students:0, lecturer: Professor " + course.getProfName());
+		} else {
+			//add the course
+			courseInfo.add(course);
+			System.out.println("Successfully added the course: " + course.getCourseCode() + "|" + course.getCourseName() +
+					", " + course.getStartTimeinString() + "-" + course.getEndTimeinString() + " on " + course.getDayofClass() +
+					", with course capacity: " + course.getClassSize() + ", students:0, lecturer: Professor " + course.getProfName());
+		}
+		return courseInfo;
 		
-		// a condition that professor doesn't exists
-		Professor professor5 = new Professor("This is 5", "prof5", "prof5", "prof5");
-		assertFalse(admin.professorExists(professor5, profInfo));
 	}
 	
-	@Test
-	void testaddNewCourse() {
-		//test if a course with exist professor and no time conflict can be added successfully
-		System.out.println("testaddNewCourse");
-		ArrayList<Course> courseInfo2 = new ArrayList<Course>();
-		Course CIT901 = new Course("CIT901", "Course", "Clayton Greenberg", "TR", "10:30", "11:30", 72);
-		courseInfo2.add(CIT901);
-		Course CIT900 = new Course("CIT900", "Course", "Clayton Greenberg", "MW", "16:30", "18:00", 72);
-		assertTrue(admin.addNewCourse(CIT900, courseInfo2, true, false).contains(CIT900));
-		
-		//test if a course without exist professor 
-		Course CIT902 = new Course("CIT901", "Course", "new professor", "TR", "10:30", "11:30", 72);
-		assertFalse(admin.addNewCourse(CIT902, courseInfo2, false, false).contains(CIT902));
-		
-		//test if a course with time conflict can be added successfully
-		System.out.println("hello");
-		Course CIT904 = new Course("CIT904", "Course", "Clayton Greenberg", "TR", "10:30", "11:30", 72);
-		assertFalse(admin.addNewCourse(CIT904, courseInfo2, true, true).contains(CIT904));
+	/**
+	 * delete courses
+	 * @return list of all courses
+	 */
+	public ArrayList<Course> deleteCourse(Course course, ArrayList<Course> courseInfo) {
+		if(courseInfo.contains(course)){
+			//if the course is in the courseInfo
+			courseInfo.remove(course);
+			System.out.println("Successfully removed the course: " + course.getCourseCode());
+		} else {
+			//else the course isn't in the courseInfo
+			System.out.println("The course doens't exists");
+		}
+		return courseInfo;
 	}
 	
 	
-	@Test
-	void testdeleteCourse() {
-		System.out.println("deleteCourse");
-		//test if delete a course that already exists
-		Course course = courseInfo.get(0);
-		//output should be Successfully removed the course: CIT590
-		assertFalse(admin.deleteCourse(course, courseInfo).contains(course));
-		
-		//test if delete a course that doesn't exists
-		Course CIT592 = new Course("CIT592", "Course", "Clayton Greenberg", "TR", "10:00", "11:00", 72);
-		//output should be The course doens't exists
-		assertFalse(admin.deleteCourse(CIT592, courseInfo).contains(CIT592));	
+	/**
+	 * Add new professor
+	 * @param professor name
+	 * @return list of updated professor
+	 */
+	public ArrayList<Professor> addProfessor(Professor professor, ArrayList<Professor> profInfo) {
+		//check if the ID and username already exists
+		int x = 0;
+		for(int i = 0; i < profInfo.size(); i++) {
+			if (professor.getID().equals(profInfo.get(i).getID())) {
+				System.out.println("The ID already exists");
+				x = 1;
+				break;
+				//return profInfo;
+			} else if (professor.getUserName().equals(profInfo.get(i).getUserName())) {
+				System.out.println("The username already exists");
+				x = 1;
+				break;
+			} else {
+				continue;
+			}
+		}
+		//if doesn't exist, add professor
+		if (x == 0) {
+			profInfo.add(professor);
+			System.out.println("Successfully added the new professor: " + professor.getID() + " " + professor.getName());
+		}
+		return profInfo;
 	}
 	
-	@Test
-	void testaddProfessor() {
-		System.out.println("addProfessor");
-		//test if add a professor that already exists
-		Professor professor1 = profInfo.get(0);
-		//output should be The ID already exists
-		assertTrue(admin.addProfessor(professor1, profInfo).contains(professor1));
-		
-		//test if add a professor that doesn't exists
-		Professor professor2 = new Professor("Lio", "00", "00", "name");
-		//output should be The professor successfully added
-		assertTrue(admin.addProfessor(professor2, profInfo).contains(professor2));
+	/**
+	 * delete professor
+	 * @param professor name
+	 */
+	public ArrayList<Professor> deleteProfessor(Professor professor, ArrayList<Professor> profInfo) {
+		if(profInfo.contains(professor)){
+			//if the course is in the courseInfo
+			profInfo.remove(professor);
+			System.out.println("Successfully removed the new professor: " + professor.getID() + " "+ professor.getName());
+		} else {
+			//else the course isn't in the courseInfo
+			System.out.println("The ID doesn't exists");
+		}
+		return profInfo;
 	}
 	
-	@Test
-	void testdeleteProfessor() {
-		System.out.println("deleteProfessor");
-		//test if delete a professor that exists
-		Professor professor3 = profInfo.get(1);
-		assertFalse(admin.deleteProfessor(professor3, profInfo).contains(professor3));
-		
-		//test if delete a professor doesn't exists
-		Professor professor4 = new Professor("This is name", "999", "liu", "lio");
-		//output should be The course doens't exists
-		assertFalse(admin.deleteProfessor(professor4, profInfo).contains(professor4));	
+	/**
+	 * Add new student
+	 * @param student name
+	 */
+	public ArrayList<Student> addStudent(Student student, ArrayList<Student> studentInfo) {
+		int x = 0;
+		for(int i = 0; i < studentInfo.size(); i++) {
+			//check if the ID and username already exists
+			if (student.getID().equals(studentInfo.get(i).getID())) {
+				System.out.println("The ID already exists");
+				x = 1;
+				break;
+				//return profInfo;
+			} else if (student.getUserName().equals(studentInfo.get(i).getUserName())) {
+				System.out.println("The username already exists");
+				x = 1;
+				break;
+			} else {
+				continue;
+			}
+		}
+		//if not exists, add student
+		if (x == 0) {
+			studentInfo.add(student);
+			System.out.println("Successfully added the new student: " + student.getID() + " " + student.getName());
+		}
+		return studentInfo;
 	}
 	
-	@Test
-	void testaddStudent() {
-		System.out.println("addStudent");
-		//test if add a student that already exists
-		Student student1 = studentInfo.get(0);
-		//output should be The ID already exists
-		assertTrue(admin.addStudent(student1, studentInfo).contains(student1));
-		
-		//test if add a professor that doesn't exists
-		ArrayList<String> grade1 = new ArrayList<String>();
-		grade1.add("CIT593: A");
-		Student student2 = new Student("This is name", "this is id", "00", "student", grade1);
-		//output should be The student successfully added
-		assertTrue(admin.addStudent(student2, studentInfo).contains(student2));
-	}
 	
-	@Test
-	void testdeleteStudent() {
-		System.out.println("deleteStudent");
-		//test if delete a student that exists
-		Student student3 = studentInfo.get(1);
-		assertFalse(admin.deleteStudent(student3, studentInfo).contains(student3));
-		
-		//test if delete a student doesn't exists
-		ArrayList<String> grade2 = new ArrayList<String>();
-		grade2.add("CIT592: A");
-		Student student4 = new Student("This is name", "this is id", "liu", "password", grade2);
-		//output should be The course doens't exists
-		assertFalse(admin.deleteStudent(student4, studentInfo).contains(student4));	
+	/**
+	 * delete student
+	 * @param student name
+	 */
+	public ArrayList<Student> deleteStudent(Student student, ArrayList<Student> studentInfo) {
+		if(studentInfo.contains(student)){
+			//if the course is in the courseInfo
+			studentInfo.remove(student);
+			System.out.println("Successfully removed the new student: " + student.getID() + " " + student.getName());
+		} else {
+			//else the course isn't in the courseInfo
+			System.out.println("The ID doesn't exists");
+		}
+		return studentInfo;
 	}
 }
