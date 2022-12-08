@@ -173,7 +173,7 @@ public class Controller {
                             scanner);
                         if (endTime.equals("q")) { continue; }
                         String date= askForString(
-                            "Please enter the course end time, or type 'q' to quit. e.g. '21:00'",
+                            "Please enter the course's day of week, or type 'q' to quit. e.g. 'MWF'",
                             scanner);
                         if (date.equals("q")) { continue; }
                         String capacity= askForString(
@@ -231,8 +231,120 @@ public class Controller {
                         }
                         // 3 -- Delete courses
                     } else if (answer == 3) {
+                        boolean loopContinues= true;
 
+                        do {
+                            String courseIDToDelete= askForString(
+                                "Please enter the course code that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
+                                scanner);
+                            if (courseIDToDelete.equals("q")) { break; }
+                            Course courseToDelete= checkCourseToAdd(reader.getCourseObj(),
+                                courseIDToDelete);
+                            // if the course the admin wants to delete is valid
+                            if (courseToDelete != null) {
+                                ourAdmin.deleteCourse(courseToDelete, reader.getCourseObj());
+                                loopContinues= false;
+                            } else {
+                                System.out.println(
+                                    "The course you are trying to delete is not in the database. try again!!!");
+                            }
+
+                        } while (loopContinues);
+                        // delete professor
+                    } else if (answer == 4) {
+                        boolean loopContinues= true;
+                        do {
+                            String ProfIDToDelete= askForString(
+                                "Please enter the ID of the professor that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
+                                scanner);
+                            if (ProfIDToDelete.equals("q")) { break; }
+                            Professor profToDelete= getProfByID(reader.getProfObj(),
+                                ProfIDToDelete);
+                            // if the professor is in the database
+                            if (profToDelete != null) {
+                                ourAdmin.deleteProfessor(profToDelete, reader.getProfObj());
+                                loopContinues= false;
+                                // if not, prompt the user again
+                            } else {
+                                System.out.println(
+                                    "The professor you are trying to delete is not in the database. try again!!!");
+                            }
+
+                        } while (loopContinues);
+                    } else if (answer == 5) {
+                        boolean loopContinues= true;
+                        do {
+                            String StudentIDToDelete= askForString(
+                                "Please enter the ID of the student that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
+                                scanner);
+                            if (StudentIDToDelete.equals("q")) { break; }
+                            Student StudentToDelete= getStudentByID(reader.getStudentObj(),
+                                StudentIDToDelete);
+                            // if the professor is in the database
+                            if (StudentToDelete != null) {
+                                ourAdmin.deleteStudent(StudentToDelete, reader.getStudentObj());
+                                loopContinues= false;
+                                // if not, prompt the user again
+                            } else {
+                                System.out.println(
+                                    "The professor you are trying to delete is not in the database. try again!!!");
+                            }
+
+                        } while (loopContinues);
+                        // add a new student
+                    } else if (answer == 6) {
+                        boolean loopContinues= true;
+                        do {
+                            String StudentToAdd= askForString(
+                                "Please enter the ID of the student that you want to add, or type 'q' to quit. e.g. '001' ",
+                                scanner);
+                            if (StudentToAdd.equals("q")) { break; }
+                            Student checkNotExist= getStudentByID(reader.getStudentObj(),
+                                StudentToAdd);
+                            // if the professor is in the database
+                            if (checkNotExist == null) {
+                                String StudentUsername= askForString(
+                                    "Please enter the student's username, or type 'q' to quit. e.g. 'studnet1'",
+                                    scanner);
+                                if (StudentUsername.equals("q")) { continue; }
+                                String StudentPassword= askForString(
+                                    "Please enter the student's password, or type 'q' to quit. e.g. '12344444'",
+                                    scanner);
+                                if (StudentPassword.equals("q")) { continue; }
+                                if (checkStudentLogin(reader.getStudentObj(), StudentUsername,
+                                    StudentPassword) != null) {
+                                    System.out.println(
+                                        "The student with this username and password already exist. please try again !!!");
+                                    continue;
+                                }
+                                String StudentID= askForString(
+                                    "Please enter the student's ID, or type 'q' to quit. e.g. '02'",
+                                    scanner);
+                                if (StudentUsername.equals("q")) { continue; }
+                                if (getStudentByID(reader.getStudentObj(), StudentID) != null) {
+                                    System.out.println(
+                                        "The student with this ID already exist. please try again !!!");
+                                    continue;
+                                }
+                                String StudentName= askForString(
+                                    "Please enter the student's name, or type 'q' to quit. e.g. 'Stephen straww'",
+                                    scanner);
+                                if (StudentName.equals("q")) { continue; }
+
+                                Student AdminChoice5= new Student(StudentUsername, StudentPassword,
+                                    StudentID,
+                                    StudentName, grade2);
+                                ourAdmin.addStudent(StudentToAdd, reader.getStudentObj());
+                                loopContinues= false;
+                                // if not, prompt the user again
+                            } else {
+                                System.out.println(
+                                    "The student you are trying to add already exists in the database. try again!!!");
+                            }
+
+                        } while (loopContinues);
                     }
+
                     // answer == 8
                 } else {
                     loopcontinues= false;
@@ -247,6 +359,23 @@ public class Controller {
         }
 
         return false;
+    }
+
+    /** create an ArrayList of string that represent the Grades of the student
+     *
+     * @param scanner
+     * @param reader
+     * @return */
+    private static ArrayList<String> CreateGrades(FileInfoReader reader, Scanner scanner) {
+        boolean loop= true;
+        ArrayList<String> output;
+        do {
+            String CourseID= askForString(
+                "Please enter the ID of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.",
+                scanner);
+            if
+
+        } while (loop);
     }
 
     private static boolean StudentLogin(Scanner scanner, FileInfoReader reader) {
@@ -358,12 +487,23 @@ public class Controller {
 
     /** This function gets the Prof with the given id
      *
-     * @param list
-     * @param username
-     * @param password
-     * @return */
+     * @param list:     an arraylist of professor
+     * @param professor ID
+     * @return a professor obj */
     private static Professor getProfByID(ArrayList<Professor> list, String ID) {
         for (Professor s : list) {
+            if (s.getID().equals(ID)) { return s; }
+        }
+        return null;
+    }
+
+    /** This function gets the Student with the given id
+     *
+     * @param list:   an arraylist of Student
+     * @param student ID
+     * @return a student obj */
+    private static Student getStudentByID(ArrayList<Student> list, String ID) {
+        for (Student s : list) {
             if (s.getID().equals(ID)) { return s; }
         }
         return null;
@@ -463,14 +603,17 @@ public class Controller {
         do {
             answer= askForString(prompt, scanner);
             if (answer.equals("q")) loop= false;
-            else if (checkCourseToAdd(reader.getCourseObj(), answer) != null) {
-                loop= false;
-            } else {
+            // if answer represents an existing course, then checkCourseToAdd == a real Course
+            // object
+            else if (checkCourseToAdd(reader.getCourseObj(), answer.strip()) != null) {
                 System.out.println(
                     "Sorry, the course with the ID already exists in our database. Please enter a new course only.");
+            } else {
+                loop= false;
             }
 
         } while (loop);
+        System.out.println("The course to be added is " + answer);
         return answer;
     }
 
@@ -484,7 +627,10 @@ public class Controller {
         boolean loop= true;
         String ID;
         Professor newProf;
+//        String notice;
         do {
+            System.out.println(
+                "This professor hasn't been established in our system yet. Let's create the professor.");
             ID= askForString("Please enter the professor's ID, or type 'q' to quit. ", scanner);
             if (ID.equals("q")) {
                 loop= false;
@@ -569,39 +715,16 @@ public class Controller {
         return answer;
 
     }
-}
 
-//// way of printing courses
-//FileInfoReader reader= new FileInfoReader();
-//reader.readFromCourseFile("courseInfo.txt");
-////for (Course c : reader.getCourseObj()) {
-////    System.out.println(c.print());
-////}
-//System.out.println(reader.getCourseObj().get(0).getStartTimeinNum());
-//System.out.println(reader.getCourseObj().get(0).getEndTimeinNum());
-//System.out.println(reader.getCourseObj().get(0).getDuration());
+//    /** Asks the user for a String. Prompts again if the user input is not a valid String
+//     *
+//     * @param scanner for user input
+//     * @return a String answer */
+//    private static String askForArrayList(String prompt, Scanner scanner) {
+////       String answer= "";
+//        System.out.println(prompt);
+//        String answer= scanner.next().strip();
+//        return answer;
 //
-//// way of printing students
-//FileInfoReader reader2= new FileInfoReader();
-//reader2.readFromStudentFile("studentInfo.txt");
-////for (Student s : reader2.getStudentObj()) {
-////    System.out.println(s.print());
-////}
-//System.out.println(reader2.getStudentObj().get(1).getGrades());
-//// return a set view of keys contained in the map
-//System.out.println(reader2.getStudentObj().get(1).getGradesInMap().keySet());
-//System.out.println(reader2.getStudentObj().get(1).getStudentCourse());
-//
-//// way of printing prof
-//FileInfoReader reader3= new FileInfoReader();
-//reader3.readFromProfFile("profInfo.txt");
-////for (Professor p : reader3.getProfObj()) {
-////    System.out.println(p.print());
-////}
-//
-//// way of printing prof
-//FileInfoReader reader4= new FileInfoReader();
-//reader4.readFromAdminFile("adminInfo.txt");
-////for (Admin a : reader4.getAdminObj()) {
-////    System.out.println(a.print());
-////}
+//    }
+}
