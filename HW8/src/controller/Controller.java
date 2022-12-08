@@ -122,7 +122,7 @@ public class Controller {
         } else {
             System.out
                 .println("Your username and password combination is wrong. Please try again!");
-            return StudentLogin(scanner, reader);
+            return ProfessorLogin(scanner, reader);
         }
 //        System.out.println("Line 104 reached");
         return false;
@@ -140,6 +140,7 @@ public class Controller {
         if (password.equals("q")) { return false; }
 
         Admin ourAdmin= checkAdminLogin(reader.getAdminObj(), username, password);
+//        System.out.println("our admin is " + ourAdmin.print());
         if (ourAdmin != null) {
             boolean loopcontinues= true;
             while (loopcontinues) {
@@ -295,67 +296,98 @@ public class Controller {
                     } else if (answer == 6) {
                         boolean loopContinues= true;
                         do {
+
+                            // ask for student ID
                             String StudentToAdd= askForString(
                                 "Please enter the ID of the student that you want to add, or type 'q' to quit. e.g. '001' ",
                                 scanner);
                             if (StudentToAdd.equals("q")) { break; }
+                            // check if the ID already exists
                             Student checkNotExist= getStudentByID(reader.getStudentObj(),
                                 StudentToAdd);
-                            // if the professor is in the database
-                            if (checkNotExist == null) {
-                                String StudentUsername= askForString(
-                                    "Please enter the student's username, or type 'q' to quit. e.g. 'studnet1'",
-                                    scanner);
-                                if (StudentUsername.equals("q")) { continue; }
-                                String StudentPassword= askForString(
-                                    "Please enter the student's password, or type 'q' to quit. e.g. '12344444'",
-                                    scanner);
-                                if (StudentPassword.equals("q")) { continue; }
-                                if (checkStudentLogin(reader.getStudentObj(), StudentUsername,
-                                    StudentPassword) != null) {
-                                    System.out.println(
-                                        "The student with this username and password already exist. please try again !!!");
-                                    continue;
-                                }
-                                String StudentID= askForString(
-                                    "Please enter the student's ID, or type 'q' to quit. e.g. '02'",
-                                    scanner);
-                                if (StudentUsername.equals("q")) { continue; }
-                                if (getStudentByID(reader.getStudentObj(), StudentID) != null) {
-                                    System.out.println(
-                                        "The student with this ID already exist. please try again !!!");
-                                    continue;
-                                }
-                                String StudentName= askForString(
-                                    "Please enter the student's name, or type 'q' to quit. e.g. 'Stephen straww'",
-                                    scanner);
-                                if (StudentName.equals("q")) { continue; }
+                            // if the ID already exists, prompt the user again
+                            if (checkNotExist != null) {
+                                System.out.println(
+                                    "The student with this ID already exist. please try again !!!");
+                                continue;
+                            }
+                            // if the ID doesn't exist
 
-                                Student AdminChoice5= new Student(StudentUsername, StudentPassword,
-                                    StudentID,
-                                    StudentName, grade2);
-                                ourAdmin.addStudent(StudentToAdd, reader.getStudentObj());
+                            // ask for username
+                            String StudentUsername= askForString(
+                                "Please enter the student's username, or type 'q' to quit. e.g. 'studnet1'",
+                                scanner);
+                            if (StudentUsername.equals("q")) { continue; }
+                            // ask for password
+                            String StudentPassword= askForString(
+                                "Please enter the student's password, or type 'q' to quit. e.g. '12344444'",
+                                scanner);
+                            if (StudentPassword.equals("q")) { continue; }
+                            // check if username and password combination already exists in db, if
+                            // so re-prompt the user
+                            if (checkStudentLogin(reader.getStudentObj(), StudentUsername,
+                                StudentPassword) != null) {
+                                System.out.println(
+                                    "The student with this username and password already exist. please try again !!!");
+                                continue;
+                            }
+                            // ask for full name
+                            String StudentName= askForString(
+                                "Please enter the student's full name, or type 'q' to quit. e.g. 'Stephen straww'",
+                                scanner);
+                            if (StudentName.equals("q")) { continue; }
+
+                            // ask for grade in ArrayList of String
+                            ArrayList<String> grades= CreateGrades(reader, scanner);
+                            Student AdminChoice5= new Student(StudentUsername, StudentPassword,
+                                StudentToAdd,
+                                StudentName, grades);
+                            ourAdmin.addStudent(AdminChoice5, reader.getStudentObj());
+                            System.out
+                                .println("The newly added student is " + AdminChoice5.print());
+                            loopContinues= false;
+                            // if not, prompt the user again
+                        }
+
+                        while (loopContinues);
+
+                        // answer == 7, Delete a student
+                    } else if (answer == 7) {
+                        boolean loopContinues= true;
+                        do {
+                            String StudentIdDelete= askForString(
+                                "Please enter the ID of the student you want to delete. e.g. '001'",
+                                scanner);
+                            if (StudentIdDelete.equals("q")) { break; }
+                            Student studentToDelete= getStudentByID(reader.getStudentObj(),
+                                StudentIdDelete);
+                            // if the professor is in the database
+                            if (studentToDelete != null) {
+                                ourAdmin.deleteStudent(studentToDelete, reader.getStudentObj());
                                 loopContinues= false;
                                 // if not, prompt the user again
                             } else {
                                 System.out.println(
-                                    "The student you are trying to add already exists in the database. try again!!!");
+                                    "The student you are trying to delete is not in the database. try again!!!");
                             }
 
                         } while (loopContinues);
+
                     }
 
                     // answer == 8
                 } else {
+                    // this is for the biggest while loop
                     loopcontinues= false;
                 }
 
             }
+
+            // if ourAdmin == null
         } else {
             System.out
                 .println("Your username and password combination is wrong. Please try again!");
             return AdminLogin(scanner, reader);
-
         }
 
         return false;
@@ -368,16 +400,37 @@ public class Controller {
      * @return */
     private static ArrayList<String> CreateGrades(FileInfoReader reader, Scanner scanner) {
         boolean loop= true;
-        ArrayList<String> output;
+        ArrayList<String> output= new ArrayList<>();
         do {
-            String CourseID= askForString(
-                "Please enter the ID of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.",
+
+//            String CourseID= askForString(
+//                "Please enter the ID of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.",
+//                scanner);
+//            if (CourseID.equals("q") || CourseID.equals("n")) { break; }
+
+            System.out.println(
+                "Please enter the ID of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.");
+            String CourseID= scanner.next().strip().toUpperCase();
+            if (CourseID.equals("q") || CourseID.equals("n")) { break; }
+
+            String CourseGrade= askForString(
+                "Please enter the CourseGrade of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.",
                 scanner);
-            if
+            if (CourseGrade.equals("q") || CourseGrade.equals("n")) { break; }
+
+            String Grade= CourseID + ": " + CourseGrade;
+            output.add(Grade);
 
         } while (loop);
+        return output;
     }
 
+    /** This function returns a boolean that shows whether the student with the username and
+     * password exists in our db
+     *
+     * @param scanner: a Scanner object
+     * @param reader:  a FileInfoReader obj
+     * @return: a boolean; true if exists, vice versa. */
     private static boolean StudentLogin(Scanner scanner, FileInfoReader reader) {
         // store username
         String username= askForString("Please enter your username, or type 'q' to quit", scanner);
@@ -403,16 +456,20 @@ public class Controller {
                         }
                         // 2 -- Add courses to your list
                     } else if (answer == 2) {
-                        Course course= StudentaddCourses(scanner, reader);
-                        System.out.println("The courses in your list are: ");// TODO
+                        Course course= StudentaddCourses(ourStudent, scanner, reader);
+//                        System.out.println("The courses in your list are: ");// TODO
 
                         // 3 -- View enrolled courses
                     } else if (answer == 3) {
-//                        System.out.println(ourStudent.g) // TODO
-
+                        for (Course c : ourStudent.getCourseList()) {
+                            System.out.println(c.print());
+                        }
                         // 4 -- Drop courses in your list
                     } else if (answer == 4) {
-                        // ourStudent.dropxxx
+                        StudentdeleteCourses(ourStudent, scanner, reader);
+                        for (Course s : ourStudent.getCourseList()) {
+                            System.out.println(s.print());
+                        }
 
                         // 5 -- View grades
                     } else if (answer == 5) {
@@ -509,6 +566,18 @@ public class Controller {
         return null;
     }
 
+    /** This function gets the Course with the given id
+     *
+     * @param list:  an arraylist of Course
+     * @param Course ID
+     * @return a Course obj */
+    private static Course getCourseByID(ArrayList<Course> list, String ID) {
+        for (Course s : list) {
+            if (s.getCourseCode().equals(ID)) { return s; }
+        }
+        return null;
+    }
+
     /** This function check if the admin with the username and password exist
      *
      * @param list
@@ -556,39 +625,90 @@ public class Controller {
      * @return */
     private static Course checkCourseToAdd(ArrayList<Course> course, String courseCode) {
         for (Course c : course) {
-            if (c.getCourseCode().equals(courseCode)) { return c; }
+//            System.out.println(c.getCourseCode());
+            if (c.getCourseCode().equals(courseCode.strip().toUpperCase())) { return c; }
         }
         return null;
     }
 
     /** do the action of adding a course that user selected to the user's cart
      *
+     * @param student: a Student object
      * @param scanner: a scanner
-     * @param reader:  the fileinforeader */
-    private static Course StudentaddCourses(Scanner scanner, FileInfoReader reader) {
+     * @param reader:  the fileinforeader
+     * @return: a Course object */
+    private static Course StudentaddCourses(Student student, Scanner scanner,
+        FileInfoReader reader) {
         boolean keeptheloop2= true;
         System.out.println("Which course do you want to add to your cart?");
 
         do {
             String addCourse= askForString("Please enter the course number that you want to add: ",
                 scanner);
+            addCourse= addCourse.toUpperCase();
             Course courseToAdd= checkCourseToAdd(reader.getCourseObj(), addCourse);
+            // check if the course code is in current database
             if (courseToAdd == null) {
                 System.out
                     .println(
-                        "The course code you entered is wrong/ not a valid course. Please try again!");
+                        "The course code you entered is wrong/ not a valid course in the current database. Please try again!");
+                continue;
+                // check if the course has conflict with student's cart
             } else {
-                keeptheloop2= false;
-                // TODO: student.addCourse();
-                System.out.println(
-                    "You have successfully added " + courseToAdd.getCourseCode() +
-                        " in your cart!");
-                return courseToAdd;
-
+                if (checkCourseToAdd(student.getCourseList(),
+                    courseToAdd.getCourseCode()) != null) {
+                    System.out.println("This course already exist. Try again!");
+                    continue;
+                }
+                // if course has time conflict with other course in cart, reprompt the user
+                else if (student.timeConflict(courseToAdd, student.getCourseList())) {
+                    System.out.println("The course you selected has time conflict");
+                    continue;
+                    // if no conflict, add the course
+                } else {
+                    student.addCourse(courseToAdd, reader.getCourseObj());
+                    System.out.println(
+                        "You have successfully added " + courseToAdd.getCourseCode() +
+                            " in your cart!");
+                    keeptheloop2= false;
+                    return courseToAdd;
+                }
             }
 
         } while (keeptheloop2);
         return null;
+    }
+
+    /** help the student to delete the course
+     *
+     * @param: student is a Student object
+     * @param: scanner is a Scanner
+     * @param reader is a FileInfoReader */
+    private static void StudentdeleteCourses(Student student, Scanner scanner,
+        FileInfoReader reader) {
+        boolean loop= true;
+        do {
+            String courseIDToDelete= askForString(
+                "Please enter the course code that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
+                scanner);
+            if (courseIDToDelete.equals("q")) { break; }
+            Course courseToDelete= checkCourseToAdd(student.getCourseList(),
+                courseIDToDelete);
+            // if the course the admin wants to delete is valid
+            if (courseToDelete != null) {
+//                ourStudent.deleteCourse(courseToDelete, reader.getCourseObj());
+                loop= false;
+                student.getCourseList().remove(courseToDelete);
+                System.out.println(
+                    "You have successfully deleted courrse " + courseToDelete.getCourseCode());
+                System.out.println("Your course list (cart) is now: ");
+
+            } else {
+                System.out.println(
+                    "The course you are trying to delete is not in your cart. try again!!!");
+            }
+
+        } while (loop);
     }
 
     /** return a String of course code (check if course is already in list; if so prompt again
@@ -711,7 +831,8 @@ public class Controller {
     private static String askForString(String prompt, Scanner scanner) {
 //        String answer= "";
         System.out.println(prompt);
-        String answer= scanner.next().strip();
+        String answer= scanner.next();
+        answer= answer.strip();
         return answer;
 
     }

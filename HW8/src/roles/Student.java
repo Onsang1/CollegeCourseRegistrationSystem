@@ -100,7 +100,8 @@ public class Student extends User {
         if (!courseInfo.contains(course)) {
             System.out.println("The course you selected does not exist");
             return courseList;
-        } else if (courseList.contains(course)) {
+        }
+        if (courseList.contains(course)) {
             // check if new course is already in the courseList
             System.out.println("The course you selected already exists");
             return courseList;
@@ -111,7 +112,10 @@ public class Student extends User {
         }
         courseList.add(course);
         System.out.println("The course in your list:");
-        System.out.println(courseList);
+//        System.out.println(courseList);
+        for (Course c : courseList) {
+            System.out.println(c.print());
+        }
         return courseList;
 
     }
