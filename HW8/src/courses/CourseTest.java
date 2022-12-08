@@ -13,7 +13,7 @@ import files.FileInfoReader;
 
 /**
  * this tests the courses
- * @author jingzhuohu
+ * @author Onsang Yau, Jingzhuo Hu
  *
  */
 
