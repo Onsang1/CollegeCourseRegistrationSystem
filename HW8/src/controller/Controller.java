@@ -272,6 +272,7 @@ public class Controller {
                             }
 
                         } while (loopContinues);
+                        // 5 -- delete a student
                     } else if (answer == 5) {
                         boolean loopContinues= true;
                         do {
@@ -403,15 +404,20 @@ public class Controller {
         ArrayList<String> output= new ArrayList<>();
         do {
 
-//            String CourseID= askForString(
-//                "Please enter the ID of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.",
-//                scanner);
-//            if (CourseID.equals("q") || CourseID.equals("n")) { break; }
-
             System.out.println(
                 "Please enter the ID of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.");
             String CourseID= scanner.next().strip().toUpperCase();
-            if (CourseID.equals("q") || CourseID.equals("n")) { break; }
+//            System.out.println("The course id is: " + CourseID);
+            if (CourseID.toLowerCase().equals("q")) {
+                break;
+            } else if (CourseID.toLowerCase().equals("n")) {
+                break;
+            }
+
+            if (getCourseByID(reader.getCourseObj(), CourseID.toUpperCase().strip()) == null) {
+                System.out.println("Sorry, but this course doesn't exist in our db, ");
+                continue;
+            }
 
             String CourseGrade= askForString(
                 "Please enter the CourseGrade of a course which this student already took, one in a time. Type 'q' to quit, type 'n' to stop adding.",
@@ -473,7 +479,11 @@ public class Controller {
 
                         // 5 -- View grades
                     } else if (answer == 5) {
-
+                        System.out.println(
+                            "Here are the courses you have already taken, with the grades in a letter format: ");
+                        for (String s : ourStudent.getGrades()) {
+                            System.out.println(s);
+                        }
                     }
 
                     // if answer == 6: quit to main menu
@@ -725,6 +735,7 @@ public class Controller {
             if (answer.equals("q")) loop= false;
             // if answer represents an existing course, then checkCourseToAdd == a real Course
             // object
+
             else if (checkCourseToAdd(reader.getCourseObj(), answer.strip()) != null) {
                 System.out.println(
                     "Sorry, the course with the ID already exists in our database. Please enter a new course only.");
