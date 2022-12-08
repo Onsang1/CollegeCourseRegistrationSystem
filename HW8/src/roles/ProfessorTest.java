@@ -12,6 +12,12 @@ import courses.Course;
 import files.FileInfoReader;
 import courses.Course;
 
+/**
+ * This is the test file for professor
+ * @author Onsang Yau, Jingzhuo Hu
+ *
+ */
+
 class ProfessorTest {
 
 	Professor professor;
