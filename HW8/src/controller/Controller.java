@@ -74,7 +74,7 @@ public class Controller {
         String password= askForString("Please enter your password, or type 'q' to quit", scanner);
         if (password.toLowerCase().equals("q")) { return false; }
 
-        // find our Student object
+        // find our Professor object
         Professor ourProf= checkProfLogin(reader.getProfObj(), username, password);
         if (ourProf != null) {
             boolean loopContinues= true;
@@ -286,7 +286,7 @@ public class Controller {
                         boolean loopContinues= true;
                         do {
                             String ProfIDToAdd= askForString(
-                                "Please enter the ID of the professor that you want to , or type 'q' to quit. e.g. '001' ",
+                                "Please enter the ID of the professor that you want to add, or type 'q' to quit. e.g. '001' ",
                                 scanner);
                             if (ProfIDToAdd.equals("q") || ProfIDToAdd.equals("Q")) { break; }
                             Professor checkExist= getProfByID(reader.getProfObj(),
@@ -298,11 +298,15 @@ public class Controller {
                                     scanner);
                                 if (profUsername.equals("q") || profUsername.equals("Q")) { break; }
 
+                                if (getProfByUsername(reader.getProfObj(), profUsername) != null) {
+                                    System.out.println(
+                                        "Sorry, but the username and password combination already exists in our database, please re-enter the information.");
+                                    continue;
+                                }
                                 String profPassword= askForString(
                                     "Please enter the password of the professor that you want to , or type 'q' to quit. e.g. '001' ",
                                     scanner);
                                 if (profPassword.equals("q") || profPassword.equals("Q")) { break; }
-
                                 String profName= askForString(
                                     "Please enter the name of the professor that you want to , or type 'q' to quit. e.g. '001' ",
                                     scanner);
@@ -580,6 +584,13 @@ public class Controller {
         return null;
     }
 
+    private static Professor getProfByUsername(ArrayList<Professor> list, String username) {
+        for (Professor s : list) {
+            if (s.getUserName().toLowerCase().equals(username.toLowerCase())) { return s; }
+        }
+        return null;
+    }
+
     /** This function gets the Prof with the given id
      *
      * @param list:     an arraylist of professor
@@ -587,7 +598,7 @@ public class Controller {
      * @return a professor obj */
     private static Professor getProfByID(ArrayList<Professor> list, String ID) {
         for (Professor s : list) {
-            if (s.getID().equals(ID)) { return s; }
+            if (s.getID().toLowerCase().equals(ID.toLowerCase())) { return s; }
         }
         return null;
     }
@@ -813,6 +824,11 @@ public class Controller {
                     break;
                 } else {
                     String username= askForString("Enter a username", scanner);
+                    if (getProfByUsername(reader.getProfObj(), username) != null) {
+                        System.out.println(
+                            "Sorry, but this username and password combination already exists in our db, please try again!");
+                        continue;
+                    }
                     String password= askForString("Enter a password", scanner);
 
                     newProf= new Professor(username, password, ID, name);
