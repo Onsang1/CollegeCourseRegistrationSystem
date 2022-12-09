@@ -87,7 +87,6 @@ public class Course {
 
     /** get start time in double */
     public double getStartTimeinNum() {
-        // TODO
         String info[]= StartTime.split(":");
         double hours= Integer.parseInt(info[0].strip());
         double minsInt= Integer.parseInt(info[0].strip());
@@ -98,7 +97,6 @@ public class Course {
 
     /** get start time in double */
     public double getEndTimeinNum() {
-        // TODO
         String info[]= EndTime.split(":");
         double hours= Integer.parseInt(info[0].strip());
         double minsInt= Integer.parseInt(info[0].strip());
