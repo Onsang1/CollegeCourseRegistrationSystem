@@ -188,27 +188,6 @@ public class Course {
         return roundedValue;
     }
 
-//  /** a helper method that translate any time in string into a comparable double
-//  *
-//  * @param Start = start time in String (out of 24 hours) 00:00 - 1:30pm
-//  * @param end   = end time in String (out of 24 hours)
-//  * @return a double for comparison */
-// public double TimeToNum(String Start, String end) {
-//     // TODO
-//     // 1. translate start time into a number
-//     String startTimeArray[]= Start.split(":");
-//
-//     // 2. translate end time into a number
-//     // 3. endtime - starttime = duration
-//
-//     return 0;
-// }
-//
-// /** a method that translate the string time into double form
-//  *
-//  * @param: a string */
-// public void setTimeinNum() {
-//     TimeinNum= TimeToNum(StartTime, EndTime);
-// }
+
 
 }

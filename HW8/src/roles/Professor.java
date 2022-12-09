@@ -77,7 +77,10 @@ public class Professor extends User {
 		}
 		return studentsList;
 	}
-	
+	/**
+	 * the function that returns the printout format of professor
+	 * @return
+	 */
 	@Override
     public String print() {
         String output= getName() + "; " + getID() + "; " + getUserName() + "; " + getPassword();

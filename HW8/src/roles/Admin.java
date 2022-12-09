@@ -31,7 +31,6 @@ public class Admin extends User {
     @Override
     public String print() {
         String output= getID() + "; " + getName() + "; " + getUserName() + "; " + getPassword();
-        //System.out.println(getName());
         return output;
     }
     
@@ -39,7 +38,7 @@ public class Admin extends User {
      * check if the professor is already in the profInfo
      * @param professor
      * @param profInfo
-     * @return
+     * @return a boolean, true if prof exists, false if not.
      */
     public Boolean professorExists(Professor professor, ArrayList<Professor> profInfo) {
     	if(profInfo.contains(professor)) {
@@ -54,15 +53,18 @@ public class Admin extends User {
 	 */
 	public ArrayList<Course> addNewCourse(Course course, ArrayList<Course> courseInfo, Boolean professorExists, Boolean timeConflict) {
 		if (courseInfo.contains(course)){
-			//if the course is in the courseInfo
+			//if the course is not in the courseInfo
 			System.out.println("The course already exist");
+			// if prof not in system
 		} else if (!professorExists) {
 			System.out.println("The professor isn't in the system, please add this professor first");
+			// if course has time conflict
 		} else if (timeConflict) {
 			System.out.println("The new added course has time conflict with course" + this.timeConflictCourse (course, courseInfo));
 			System.out.println("Unable to add new course: " + course.getCourseCode() + "|" + course.getCourseName() +
 					", " + course.getStartTimeinString() + "-" + course.getEndTimeinString() + " on " + course.getDayofClass() +
 					", with course capacity: " + course.getClassSize() + ", students:0, lecturer: Professor " + course.getProfName());
+			// if no problem, add the course
 		} else {
 			courseInfo.add(course);
 			System.out.println("Successfully added the course: " + course.getCourseCode() + "|" + course.getCourseName() +
@@ -165,8 +167,10 @@ public class Admin extends User {
 	
 	
 	/**
-	 * delete student
-	 * @param student name
+	 * helps delete the student
+	 * @param student: an Object of student
+	 * @param : an Arraylist of Student object
+	 * @return: an ArrayList of Student
 	 */
 	public ArrayList<Student> deleteStudent(Student student, ArrayList<Student> studentInfo) {
 		if(studentInfo.contains(student)){
