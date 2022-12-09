@@ -63,7 +63,7 @@ public class Professor extends User {
 			return studentsList;
 		} else {
 			for (int j = 0; j < studentsList.size(); j++) {
-				System.out.println(studentsList.get(j).getID() + " " + studentsList.get(j).getUserName());
+				System.out.println(studentsList.get(j).getID() + " " + studentsList.get(j).getName());
 			}
 		}
 		return studentsList;

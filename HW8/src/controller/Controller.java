@@ -69,10 +69,10 @@ public class Controller {
     private static boolean ProfessorLogin(Scanner scanner, FileInfoReader reader) {
         // store username
         String username= askForString("Please enter your username, or type 'q' to quit", scanner);
-        if (username.equals("q")) { return false; }
+        if (username.toLowerCase().equals("q")) { return false; }
         // store password
         String password= askForString("Please enter your password, or type 'q' to quit", scanner);
-        if (password.equals("q")) { return false; }
+        if (password.toLowerCase().equals("q")) { return false; }
 
         // find our Student object
         Professor ourProf= checkProfLogin(reader.getProfObj(), username, password);
@@ -89,7 +89,7 @@ public class Controller {
                         for (Course c : ourProf.getGivenCourses(reader.getCourseObj())) {
                             System.out.println(c.print());
                         }
-                        // 2 -- Add courses to your list
+                        // 2 -- view student list of the given course
                     } else if (answer == 2) {
                         boolean enterID= true;
                         // prompt the user
@@ -97,16 +97,16 @@ public class Controller {
                             String CourseID= askForString(
                                 "Please enter the CourseID. e.g. CIT590, or type 'q' to quit",
                                 scanner);
-                            if (CourseID.equals("q")) { break; }
+                            if (CourseID.equals("q") || CourseID.equals("Q")) { break; }
                             // TODO
                             Course courseToView= checkCourseToAdd(reader.getCourseObj(), CourseID);
                             // if the prof entered a course with valid course code
                             if (CourseID != null) {
                                 ArrayList<Student> students= ourProf.getStudentList(courseToView,
                                     reader.getStudentObj());
-                                for (Student s : students) {
-                                    System.out.println(s.getID() + " " + s.getName());
-                                }
+//                                for (Student s : students) {
+//                                    System.out.println(s.getID() + " " + s.getName());
+//                                }
                                 enterID= false;
                             }
                         } while (enterID);
@@ -133,11 +133,11 @@ public class Controller {
         // Store username and password
         String username= askForString("Please enter your username, or type 'q' to quit",
             scanner);
-        if (username.equals("q")) { return false; }
+        if (username.toLowerCase().equals("q")) { return false; }
         // store password
         String password= askForString("Please enter your password, or type 'q' to quit",
             scanner);
-        if (password.equals("q")) { return false; }
+        if (password.toLowerCase().equals("q")) { return false; }
 
         Admin ourAdmin= checkAdminLogin(reader.getAdminObj(), username, password);
 //        System.out.println("our admin is " + ourAdmin.print());
@@ -160,32 +160,34 @@ public class Controller {
                         String CourseID= AdminAddCourse(reader,
                             "Please enter the course ID, or type 'q' to quit. e.g. 'CIT800'",
                             scanner);
-                        if (CourseID.equals("q")) { continue; }
+                        if (CourseID.toLowerCase().equals("q")) { continue; }
                         String name= askForString(
                             "Please enter the course name, or type 'q' to quit. e.g. 'Java' ",
                             scanner);
-                        if (name.equals("q")) { continue; }
+                        if (name.toLowerCase().equals("q")) { continue; }
                         String startTime= askForString(
                             "Please enter the course start time, or type 'q' to quit. e.g. '20:00'",
                             scanner);
-                        if (startTime.equals("q")) { continue; }
+                        if (startTime.toLowerCase().equals("q")) { continue; }
                         String endTime= askForString(
                             "Please enter the course end time, or type 'q' to quit. e.g. '21:00'",
                             scanner);
-                        if (endTime.equals("q")) { continue; }
+                        if (endTime.toLowerCase().equals("q")) { continue; }
                         String date= askForString(
                             "Please enter the course's day of week, or type 'q' to quit. e.g. 'MWF'",
                             scanner);
-                        if (date.equals("q")) { continue; }
+                        if (date.toLowerCase().equals("q")) { continue; }
+                        // change date to upper case
+                        date= date.toUpperCase();
                         String capacity= askForString(
                             "Please enter the course capacity, or type 'q' to quit. e.g. '72'",
                             scanner);
-                        if (capacity.equals("q")) { continue; }
+                        if (capacity.toLowerCase().equals("q")) { continue; }
                         int classSize= Integer.parseInt(capacity);
                         String lecturerId= askForString(
                             "Please enter the course lecturer's id, or type 'q' to quit. e.g. '001'",
                             scanner);
-                        if (lecturerId.equals("q")) { continue; }
+                        if (lecturerId.toLowerCase().equals("q")) { continue; }
                         // 1. check if professor exists
                         boolean ProfExists= professorExists(lecturerId, reader.getProfObj());
                         if (ProfExists) {
@@ -213,16 +215,23 @@ public class Controller {
                         } else {
                             Professor newProf;
                             newProf= AdminCreateProf(reader, scanner);
+                            // if admin chooses to quit, we return to the admin menu
                             if (newProf == null) {
                                 continue;
+                                //
                             } else {
                                 Course courseToAdd2= new Course(CourseID, name, newProf.getName(),
                                     date,
                                     startTime, endTime, classSize);
+                                // professor exists but doesn't have time conflict; can add course
                                 if (!newProf.timeConflict(courseToAdd2,
                                     newProf.getGivenCourses(reader.getCourseObj()))) {
+                                    System.out.println("Successfully added the professor " +
+                                        newProf.getID() + " " + newProf.getName());
                                     ourAdmin.addNewCourse(courseToAdd2, reader.getCourseObj(), true,
                                         false);
+
+                                    // professor exists but has time conflict
                                 } else {
                                     ourAdmin.addNewCourse(courseToAdd2, reader.getCourseObj(), true,
                                         true);
@@ -238,7 +247,7 @@ public class Controller {
                             String courseIDToDelete= askForString(
                                 "Please enter the course code that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
                                 scanner);
-                            if (courseIDToDelete.equals("q")) { break; }
+                            if (courseIDToDelete.toLowerCase().equals("q")) { break; }
                             Course courseToDelete= checkCourseToAdd(reader.getCourseObj(),
                                 courseIDToDelete);
                             // if the course the admin wants to delete is valid
@@ -251,14 +260,14 @@ public class Controller {
                             }
 
                         } while (loopContinues);
-                        // delete professor
-                    } else if (answer == 4) {
+                        // 5 -- delete professor
+                    } else if (answer == 5) {
                         boolean loopContinues= true;
                         do {
                             String ProfIDToDelete= askForString(
                                 "Please enter the ID of the professor that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
                                 scanner);
-                            if (ProfIDToDelete.equals("q")) { break; }
+                            if (ProfIDToDelete.toLowerCase().equals("q")) { break; }
                             Professor profToDelete= getProfByID(reader.getProfObj(),
                                 ProfIDToDelete);
                             // if the professor is in the database
@@ -272,24 +281,43 @@ public class Controller {
                             }
 
                         } while (loopContinues);
-                        // 5 -- delete a student
-                    } else if (answer == 5) {
+                        // 4 -- add a professor
+                    } else if (answer == 4) {
                         boolean loopContinues= true;
                         do {
-                            String StudentIDToDelete= askForString(
-                                "Please enter the ID of the student that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
+                            String ProfIDToAdd= askForString(
+                                "Please enter the ID of the professor that you want to , or type 'q' to quit. e.g. '001' ",
                                 scanner);
-                            if (StudentIDToDelete.equals("q")) { break; }
-                            Student StudentToDelete= getStudentByID(reader.getStudentObj(),
-                                StudentIDToDelete);
+                            if (ProfIDToAdd.equals("q") || ProfIDToAdd.equals("Q")) { break; }
+                            Professor checkExist= getProfByID(reader.getProfObj(),
+                                ProfIDToAdd);
                             // if the professor is in the database
-                            if (StudentToDelete != null) {
-                                ourAdmin.deleteStudent(StudentToDelete, reader.getStudentObj());
+                            if (checkExist == null) {
+                                String profUsername= askForString(
+                                    "Please enter the username of the professor that you want to , or type 'q' to quit. e.g. '001' ",
+                                    scanner);
+                                if (profUsername.equals("q") || profUsername.equals("Q")) { break; }
+
+                                String profPassword= askForString(
+                                    "Please enter the password of the professor that you want to , or type 'q' to quit. e.g. '001' ",
+                                    scanner);
+                                if (profPassword.equals("q") || profPassword.equals("Q")) { break; }
+
+                                String profName= askForString(
+                                    "Please enter the name of the professor that you want to , or type 'q' to quit. e.g. '001' ",
+                                    scanner);
+                                if (profName.equals("q") || profName.equals("Q")) { break; }
+                                // make a new professor
+                                Professor ProfToAdd= new Professor(profUsername, profPassword,
+                                    ProfIDToAdd, profName);
+                                // add the professor
+                                ourAdmin.addProfessor(ProfToAdd, reader.getProfObj());
                                 loopContinues= false;
-                                // if not, prompt the user again
+
+                                // if professor already exists, prompt the user again
                             } else {
                                 System.out.println(
-                                    "The professor you are trying to delete is not in the database. try again!!!");
+                                    "The professor you are trying to add is already in the db. try again!!!");
                             }
 
                         } while (loopContinues);
@@ -302,7 +330,7 @@ public class Controller {
                             String StudentToAdd= askForString(
                                 "Please enter the ID of the student that you want to add, or type 'q' to quit. e.g. '001' ",
                                 scanner);
-                            if (StudentToAdd.equals("q")) { break; }
+                            if (StudentToAdd.toLowerCase().equals("q")) { break; }
                             // check if the ID already exists
                             Student checkNotExist= getStudentByID(reader.getStudentObj(),
                                 StudentToAdd);
@@ -318,12 +346,12 @@ public class Controller {
                             String StudentUsername= askForString(
                                 "Please enter the student's username, or type 'q' to quit. e.g. 'studnet1'",
                                 scanner);
-                            if (StudentUsername.equals("q")) { continue; }
+                            if (StudentUsername.toLowerCase().equals("q")) { continue; }
                             // ask for password
                             String StudentPassword= askForString(
                                 "Please enter the student's password, or type 'q' to quit. e.g. '12344444'",
                                 scanner);
-                            if (StudentPassword.equals("q")) { continue; }
+                            if (StudentPassword.toLowerCase().equals("q")) { continue; }
                             // check if username and password combination already exists in db, if
                             // so re-prompt the user
                             if (checkStudentLogin(reader.getStudentObj(), StudentUsername,
@@ -336,7 +364,7 @@ public class Controller {
                             String StudentName= askForString(
                                 "Please enter the student's full name, or type 'q' to quit. e.g. 'Stephen straww'",
                                 scanner);
-                            if (StudentName.equals("q")) { continue; }
+                            if (StudentName.toLowerCase().equals("q")) { continue; }
 
                             // ask for grade in ArrayList of String
                             ArrayList<String> grades= CreateGrades(reader, scanner);
@@ -359,7 +387,7 @@ public class Controller {
                             String StudentIdDelete= askForString(
                                 "Please enter the ID of the student you want to delete. e.g. '001'",
                                 scanner);
-                            if (StudentIdDelete.equals("q")) { break; }
+                            if (StudentIdDelete.toLowerCase().equals("q")) { break; }
                             Student studentToDelete= getStudentByID(reader.getStudentObj(),
                                 StudentIdDelete);
                             // if the professor is in the database
@@ -440,10 +468,10 @@ public class Controller {
     private static boolean StudentLogin(Scanner scanner, FileInfoReader reader) {
         // store username
         String username= askForString("Please enter your username, or type 'q' to quit", scanner);
-        if (username.equals("q")) { return false; }
+        if (username.toLowerCase().equals("q")) { return false; }
         // store password
         String password= askForString("Please enter your password, or type 'q' to quit", scanner);
-        if (password.equals("q")) { return false; }
+        if (password.toLowerCase().equals("q")) { return false; }
 
         // find our Student object
         Student ourStudent= checkStudentLogin(reader.getStudentObj(), username, password);
@@ -653,8 +681,13 @@ public class Controller {
         System.out.println("Which course do you want to add to your cart?");
 
         do {
-            String addCourse= askForString("Please enter the course number that you want to add: ",
+            String addCourse= askForString(
+                "Please enter the course number that you want to add; if you want to quit press 'q'",
                 scanner);
+            // quitting the system
+            if (addCourse.equals("q") || addCourse.equals("Q")) {
+                break;
+            }
             addCourse= addCourse.toUpperCase();
             Course courseToAdd= checkCourseToAdd(reader.getCourseObj(), addCourse);
             // check if the course code is in current database
@@ -701,7 +734,7 @@ public class Controller {
             String courseIDToDelete= askForString(
                 "Please enter the course code that you want to delete, or type 'q' to quit. e.g. 'CIS550' ",
                 scanner);
-            if (courseIDToDelete.equals("q")) { break; }
+            if (courseIDToDelete.toLowerCase().equals("q")) { break; }
             Course courseToDelete= checkCourseToAdd(student.getCourseList(),
                 courseIDToDelete);
             // if the course the admin wants to delete is valid
@@ -732,7 +765,7 @@ public class Controller {
         String answer;
         do {
             answer= askForString(prompt, scanner);
-            if (answer.equals("q")) loop= false;
+            if (answer.toLowerCase().equals("q")) loop= false;
             // if answer represents an existing course, then checkCourseToAdd == a real Course
             // object
 
@@ -763,7 +796,7 @@ public class Controller {
             System.out.println(
                 "This professor hasn't been established in our system yet. Let's create the professor.");
             ID= askForString("Please enter the professor's ID, or type 'q' to quit. ", scanner);
-            if (ID.equals("q")) {
+            if (ID.toLowerCase().equals("q")) {
                 loop= false;
                 break;
             }
@@ -775,7 +808,7 @@ public class Controller {
                 // make certain that the professor doesn't exist in db yet
             } else {
                 String name= askForString("Enter their full name or type 'q' to quit", scanner);
-                if (name.equals("q")) {
+                if (name.toLowerCase().equals("q")) {
                     loop= false;
                     break;
                 } else {
@@ -837,10 +870,10 @@ public class Controller {
 
     /** Asks the user for a String. Prompts again if the user input is not a valid String
      *
+     * @param: prompt: some String to be printed out in the console to ask user
      * @param scanner for user input
-     * @return a String answer */
+     * @return a String answer that is stripped */
     private static String askForString(String prompt, Scanner scanner) {
-//        String answer= "";
         System.out.println(prompt);
         String answer= scanner.next();
         answer= answer.strip();
