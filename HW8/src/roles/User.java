@@ -1,7 +1,3 @@
-/**
- * @author: Yuxin Meng
- * @author: Jingzhuo Hu
- */
 
 package roles;
 
@@ -9,7 +5,9 @@ import java.util.ArrayList;
 
 import courses.Course;
 
-/** This abstract class describes the characteristics common to all users. */
+/** This abstract class describes the characteristics common to all users.
+ * @author Onsang Yau, Jingzhuo Hu
+ *  */
 public abstract class User {
 
     private String ID;
@@ -79,9 +77,12 @@ public abstract class User {
     	for (int i = 0; i < courseInfo.size(); i++) {
     		//check if share the same getDayofClass
     		if ((course.getDayofClass().contains(courseInfo.get(i).getDayofClass())) || (courseInfo.get(i).getDayofClass()).contains(course.getDayofClass())) {
+    			//check if the schedule of class conflicts
     			if ((course.getStartTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getStartTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
     				return true;
     			} else if ((course.getEndTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getEndTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
+    				return true;
+    			} else if ((course.getStartTimeinNum() == courseInfo.get(i).getStartTimeinNum()) || (course.getEndTimeinNum() == courseInfo.get(i).getEndTimeinNum())) {
     				return true;
     			}
     		} 
@@ -97,17 +98,20 @@ public abstract class User {
      */
     public Course timeConflictCourse (Course course, ArrayList<Course> courseInfo) {
     	for (int i = 0; i < courseInfo.size(); i++) {
+    		//check if dayofclass conflicts
     		if ((course.getDayofClass().contains(courseInfo.get(i).getDayofClass())) || (courseInfo.get(i).getDayofClass()).contains(course.getDayofClass())) {
-    			if ((course.getStartTimeinNum() >= courseInfo.get(i).getStartTimeinNum()) && (course.getStartTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
+    			//check if the schedule of class conflicts
+    			if ((course.getStartTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getStartTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
     				return courseInfo.get(i);
-    			} else if ((course.getEndTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getEndTimeinNum() <= courseInfo.get(i).getEndTimeinNum())) {
+    			} else if ((course.getEndTimeinNum() > courseInfo.get(i).getStartTimeinNum()) && (course.getEndTimeinNum() < courseInfo.get(i).getEndTimeinNum())) {
+    				return courseInfo.get(i);
+    			} else if ((course.getStartTimeinNum() == courseInfo.get(i).getStartTimeinNum()) || (course.getEndTimeinNum() == courseInfo.get(i).getEndTimeinNum())) {
     				return courseInfo.get(i);
     			}
     		} 
     	}
     	return null;
     }
-    
     
     /**
      * find course object according to courseID
@@ -117,6 +121,7 @@ public abstract class User {
      */
     public Course findCourseAccordingID (String courseID, ArrayList<Course> courseInfo) {
     	for (int i = 0; i < courseInfo.size(); i++) {
+    		//check if the ID exists
     		if (courseInfo.get(i).getCourseCode().equals(courseID)) {
     			return courseInfo.get(i);
     		}
@@ -132,6 +137,7 @@ public abstract class User {
      */
     public Professor findProfAccordingID (String profID, ArrayList<Professor> profInfo) {
     	for (int i = 0; i < profInfo.size(); i++) {
+    		//check if the ID exists
     		if (profInfo.get(i).getID().equals(profID)) {
     			return profInfo.get(i);
     		}

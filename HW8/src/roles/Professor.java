@@ -1,7 +1,14 @@
 package roles;
 
 import java.util.ArrayList;
+
 import courses.Course;
+
+/**
+ * This describe the function for professor
+ * @author Onsang Yau, Jingzhuo Hu
+ *
+ */
 
 public class Professor extends User {
     private static final String USERTYPE= "Professor";
@@ -33,7 +40,8 @@ public class Professor extends User {
 		ArrayList<Course> givenCourses = new ArrayList<Course> ();
 		for (int i = 0; i < courseInfo.size(); i++) {
 			//add element into the givenCourses
-			if (this.getUserName().toLowerCase().trim().equals(courseInfo.get(i).getProfName().toLowerCase().trim())) {
+			if (this.getName().toLowerCase().trim().equals(courseInfo.get(i).getProfName().toLowerCase().trim())) {
+				//System.out.println(courseInfo.get(i));
 				givenCourses.add(courseInfo.get(i));
 			}
 		}
@@ -58,6 +66,7 @@ public class Professor extends User {
 				continue;
 			}
 		}
+		//print out the list
 		System.out.println("Student in your course " + course.getCourseCode() + " " + course.getCourseName() + ":");
 		if (studentsList.size() == 0) {
 			return studentsList;

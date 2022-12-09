@@ -1,22 +1,27 @@
 package roles;
 
 import java.util.ArrayList;
+import courses.Course;
+import files.FileInfoReader;
+
+import roles.User;
 import java.util.HashMap;
 
-import courses.Course;
-
-/** This class describes a ship of length 4 */
+/**
+ * This class describes the function of students
+ * @author Onsang Yau, Jingzhuo Hu
+ */
 public class Student extends User {
     private static final String USERTYPE= "Student";
 
     private ArrayList<String> Grades= new ArrayList<>();
     private ArrayList<Course> courseList= new ArrayList<>();
-
+    
     // the grades in a hashmap
     private HashMap<String, String> GradeMap= new HashMap<>();
-
-    // create an object of course
-    Course course;
+    
+    //create an object of course
+    Course course ;
 
     /** constructor for Student
      *
@@ -24,11 +29,9 @@ public class Student extends User {
      * @param password
      * @param ID
      * @param name */
-    public Student(String username, String password, String ID, String name,
-        ArrayList<String> grade) {
+    public Student(String username, String password, String ID, String name, ArrayList<String> grade) {
         super(username, password, ID, name);
         Grades= grade;
-        setGradeMap(Grades);
     }
 
     /** return the user type in String */
@@ -54,7 +57,7 @@ public class Student extends User {
     public void setGrades(ArrayList<String> x) {
         Grades= x;
     }
-
+    
     private void setGradeMap(ArrayList<String> x) {
         for (String s : Grades) {
             String info[]= s.split(":");
@@ -70,30 +73,32 @@ public class Student extends User {
 
     /** get the student's grade (in HashMap) */
     public HashMap<String, String> getGradesInMap() {
-        setGradeMap(Grades);
+    	setGradeMap(Grades);
         return GradeMap;
     }
 
-    /** get the course object according to the courseID
-     *
+    /**
+     * get the course object according to the courseID
      * @param courseID
      * @param courseInfo
-     * @return */
+     * @return
+     */
     public Course getCourseInfo(String courseID, ArrayList<Course> courseInfo) {
-        for (int i= 0; i < courseInfo.size(); i++ ) {
-            if (courseID.toLowerCase().trim()
-                .equals(courseInfo.get(i).getCourseCode().toLowerCase().trim())) {
-                course= courseInfo.get(i);
-            }
-        }
-        return course;
+    	for (int i = 0; i < courseInfo.size(); i++) {
+    		//check if the courseID is valid
+    		if (courseID.toLowerCase().trim().equals(courseInfo.get(i).getCourseCode().toLowerCase().trim())) {
+    			course = courseInfo.get(i);
+    		}
+    	}
+    	return course;
     }
-
-    /** Add courses to courseList
-     *
-     * @param course
-     * @param courseInfo
-     * @return courseList */
+    
+	/**
+	 * Add courses to courseList
+	 * @param course
+	 * @param courseInfo
+	 * @return courseList
+	 */
     public ArrayList<Course> addCourse(Course course, ArrayList<Course> courseInfo) {
         Boolean hasConflict= timeConflict(course, getCourseList());
         // check if new course is valid
@@ -119,33 +124,37 @@ public class Student extends User {
         return courseList;
 
     }
-
-    /** View selected courses
-     *
-     * @return selected course list */
+	
+	/**
+	 * View selected courses
+	 * @return selected course list
+	 */
     public ArrayList<Course> getCourseList() {
-        return courseList;
+    	return this.courseList;
     }
-
-    /** Drop courses in your list
-     *
-     * @param course name
-     * @return course list */
-    public ArrayList<Course> dropCourses(Course course) {
-        if (getCourseList().contains(course)) {
-            getCourseList().remove(course);
-            System.out.println("Course dropped successfully");
-        } else {
-            System.out.println("The course isn't in your schedule");
-        }
-        return getCourseList();
-    }
-
-    /** view grades
-     *
-     * @param student name
-     * @return grades */
-    public String getGrades(ArrayList<Student> studentInfo) {
+	
+	/**
+	 * Drop courses in your list
+	 * @param course name
+	 * @return course list
+	 */
+	public ArrayList<Course> dropCourses(Course course) {
+		//if course in the schedule
+		if (this.getCourseList().contains(course)) {
+			this.getCourseList().remove(course);
+			System.out.println("Course dropped successfully");
+		} else {
+			System.out.println("The course isn't in your schedule");	
+		}
+		return this.getCourseList();
+	}
+	
+	/**
+	 * view grades
+	 * @param student name
+	 * @return printout grades
+	 */
+	public String getGrades(ArrayList<Student> studentInfo) {
         String x= null;
         getGradesInMap();
         System.out
