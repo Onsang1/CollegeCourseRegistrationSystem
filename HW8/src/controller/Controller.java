@@ -293,6 +293,10 @@ public class Controller {
                                 ProfIDToAdd);
                             // if the professor is in the database
                             if (checkExist == null) {
+                                String profName= askForString(
+                                    "Please enter the name of the professor that you want to , or type 'q' to quit. e.g. '001' ",
+                                    scanner);
+                                if (profName.equals("q") || profName.equals("Q")) { break; }
                                 String profUsername= askForString(
                                     "Please enter the username of the professor that you want to , or type 'q' to quit. e.g. '001' ",
                                     scanner);
@@ -307,10 +311,7 @@ public class Controller {
                                     "Please enter the password of the professor that you want to , or type 'q' to quit. e.g. '001' ",
                                     scanner);
                                 if (profPassword.equals("q") || profPassword.equals("Q")) { break; }
-                                String profName= askForString(
-                                    "Please enter the name of the professor that you want to , or type 'q' to quit. e.g. '001' ",
-                                    scanner);
-                                if (profName.equals("q") || profName.equals("Q")) { break; }
+
                                 // make a new professor
                                 Professor ProfToAdd= new Professor(profUsername, profPassword,
                                     ProfIDToAdd, profName);
@@ -350,20 +351,22 @@ public class Controller {
                             String StudentUsername= askForString(
                                 "Please enter the student's username, or type 'q' to quit. e.g. 'studnet1'",
                                 scanner);
-                            if (StudentUsername.toLowerCase().equals("q")) { continue; }
+                            if (StudentUsername.toLowerCase().equals("q")) { break; }
+
+                            // check if username and password combination already exists in db, if
+                            // so re-prompt the user
+                            if (getStudentByUsername(reader.getStudentObj(),
+                                StudentUsername) != null) {
+                                System.out.println(
+                                    "The student with this username  already exist. please try again !!!");
+                                continue;
+                            }
                             // ask for password
                             String StudentPassword= askForString(
                                 "Please enter the student's password, or type 'q' to quit. e.g. '12344444'",
                                 scanner);
-                            if (StudentPassword.toLowerCase().equals("q")) { continue; }
-                            // check if username and password combination already exists in db, if
-                            // so re-prompt the user
-                            if (checkStudentLogin(reader.getStudentObj(), StudentUsername,
-                                StudentPassword) != null) {
-                                System.out.println(
-                                    "The student with this username and password already exist. please try again !!!");
-                                continue;
-                            }
+                            if (StudentPassword.toLowerCase().equals("q")) { break; }
+
                             // ask for full name
                             String StudentName= askForString(
                                 "Please enter the student's full name, or type 'q' to quit. e.g. 'Stephen straww'",
@@ -389,7 +392,7 @@ public class Controller {
                         boolean loopContinues= true;
                         do {
                             String StudentIdDelete= askForString(
-                                "Please enter the ID of the student you want to delete. e.g. '001'",
+                                "Please enter the ID of the student you want to delete. e.g. '001' or press 'q' to exit",
                                 scanner);
                             if (StudentIdDelete.toLowerCase().equals("q")) { break; }
                             Student studentToDelete= getStudentByID(reader.getStudentObj(),
@@ -584,6 +587,11 @@ public class Controller {
         return null;
     }
 
+    /** get a Professor object by Username
+     *
+     * @param list:     an ArrayList of Professor
+     * @param username: a string of username
+     * @return a Professor object */
     private static Professor getProfByUsername(ArrayList<Professor> list, String username) {
         for (Professor s : list) {
             if (s.getUserName().toLowerCase().equals(username.toLowerCase())) { return s; }
@@ -641,7 +649,7 @@ public class Controller {
         return null;
     }
 
-    /** This function check if the student with the username exist
+    /** This function check if the student with the username and password exist
      *
      * @param list
      * @param username
@@ -651,6 +659,18 @@ public class Controller {
         String password) {
         for (Student s : list) {
             if (s.getUserName().equals(username) && s.getPassword().equals(password)) { return s; }
+        }
+        return null;
+    }
+
+    /** get a Student object by Username
+     *
+     * @param list:     an ArrayList of Student
+     * @param username: a string of username
+     * @return a Student object */
+    private static Student getStudentByUsername(ArrayList<Student> list, String username) {
+        for (Student s : list) {
+            if (s.getUserName().toLowerCase().equals(username.toLowerCase())) { return s; }
         }
         return null;
     }
@@ -788,7 +808,7 @@ public class Controller {
             }
 
         } while (loop);
-        System.out.println("The course to be added is " + answer);
+//        System.out.println("The course to be added is " + answer);
         return answer;
     }
 
