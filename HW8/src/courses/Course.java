@@ -1,5 +1,4 @@
 package courses;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -17,7 +16,7 @@ public class Course {
     // end of class
     private String EndTime;
     // time of class in terms of number, for comparison
-//    private double TimeinNum;
+    private double TimeinNum;
     // size of class
     private int ClassSize;
 
@@ -84,13 +83,13 @@ public class Course {
     public String getEndTimeinString() {
         return EndTime;
     }
-
+    
     /** get start time in double */
     public double getStartTimeinNum() {
         String info[]= StartTime.split(":");
         double hours= Integer.parseInt(info[0].strip());
-        double minsInt= Integer.parseInt(info[0].strip());
-        double minsDouble= minsInt / 60;
+        double minsInt= Integer.parseInt(info[1].strip());
+        double minsDouble= minsInt / 100;
         double result= hours + minsDouble;
         return rounding(result);
     }
@@ -99,8 +98,8 @@ public class Course {
     public double getEndTimeinNum() {
         String info[]= EndTime.split(":");
         double hours= Integer.parseInt(info[0].strip());
-        double minsInt= Integer.parseInt(info[0].strip());
-        double minsDouble= minsInt / 60;
+        double minsInt= Integer.parseInt(info[1].strip());
+        double minsDouble= minsInt / 100;
         double result= hours + minsDouble;
         return rounding(result);
     }
@@ -110,6 +109,13 @@ public class Course {
      * @return: the time of class in double */
     public double getDuration() {
         return rounding(getEndTimeinNum() - getStartTimeinNum());
+    }
+
+    /** getter method for time in number form
+     *
+     * @return: the time of class in double */
+    public double getTimeinNum() {
+        return TimeinNum;
     }
 
     /** getter method for classsize
@@ -156,6 +162,21 @@ public class Course {
         EndTime= y;
     }
 
+//    /** a helper method that translate any time in string into a comparable double
+//     *
+//     * @param a string */
+//    public double TimeToNum(String Start, String end) {
+//        // TODO
+//        return 0;
+//    }
+//
+//    /** a method that translate the string time into double form
+//     *
+//     * @param: a string */
+//    public void setTimeinNum() {
+//        TimeinNum= TimeToNum(StartTime, EndTime);
+//    }
+
     /** a method that sets the value of ClassSize
      *
      * @param: an int that represents the class size */
@@ -171,21 +192,19 @@ public class Course {
             StartTime + "; " + EndTime + "; " + ClassSize;
         return result;
     }
-
+    
     /** round any double number into 2 decimal
-     *
-     * @param c: any doubles
-     * @return: a double with 2 decimal places */
+    *
+    * @param c: any doubles
+    * @return: a double with 2 decimal places */
     private static Double rounding(double c) {
-        // create big decimal with double value
-        BigDecimal bd= new BigDecimal(c);
-        // set config for big decimal
-        bd= bd.setScale(2, RoundingMode.HALF_UP);
-        // get rounded value
-        Double roundedValue= bd.doubleValue();
-        return roundedValue;
-    }
-
-
+       // create big decimal with double value
+       BigDecimal bd= new BigDecimal(c);
+       // set config for big decimal
+       bd= bd.setScale(2, RoundingMode.HALF_UP);
+       // get rounded value
+       Double roundedValue= bd.doubleValue();
+       return roundedValue;
+   }
 
 }
