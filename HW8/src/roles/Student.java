@@ -13,8 +13,9 @@ import java.util.HashMap;
  */
 public class Student extends User {
     private static final String USERTYPE= "Student";
-
+    // an ArrayList of Strings that stores the Grade of the student
     private ArrayList<String> Grades= new ArrayList<>();
+    // the student's course cart
     private ArrayList<Course> courseList= new ArrayList<>();
     
     // the grades in a hashmap
@@ -25,13 +26,15 @@ public class Student extends User {
 
     /** constructor for Student
      *
-     * @param username
-     * @param password
-     * @param ID
-     * @param name */
+     * @param username: a String
+     * @param password: a String
+     * @param ID: a String
+     * @param name: a String */
     public Student(String username, String password, String ID, String name, ArrayList<String> grade) {
         super(username, password, ID, name);
         Grades= grade;
+        // set the grade map for student
+        setGradeMap(Grades);
     }
 
     /** return the user type in String */
@@ -57,7 +60,10 @@ public class Student extends User {
     public void setGrades(ArrayList<String> x) {
         Grades= x;
     }
-    
+    /**
+     * a setter method that sets the grade map
+     * @param x: is an ArrayList of String
+     */
     private void setGradeMap(ArrayList<String> x) {
         for (String s : Grades) {
             String info[]= s.split(":");
@@ -143,6 +149,7 @@ public class Student extends User {
 		if (this.getCourseList().contains(course)) {
 			this.getCourseList().remove(course);
 			System.out.println("Course dropped successfully");
+			// if course is not in the schedule
 		} else {
 			System.out.println("The course isn't in your schedule");	
 		}
@@ -150,9 +157,9 @@ public class Student extends User {
 	}
 	
 	/**
-	 * view grades
-	 * @param student name
-	 * @return printout grades
+	 * view the student's grades 
+	 * @param student name: a String 
+	 * @return printout grades in Strings
 	 */
 	public String getGrades(ArrayList<Student> studentInfo) {
         String x= null;
