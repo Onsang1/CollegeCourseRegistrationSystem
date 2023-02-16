@@ -1,4 +1,4 @@
-# CIT591
+
 HW8_Collab
 
 Instruction to Work on Github with Java Projects (using Eclipse)
@@ -7,7 +7,7 @@ Instruction to Work on Github with Java Projects (using Eclipse)
 3. clone this repository to Github desktop 
 4. pull from origin
 5. create a new branch from the main branch, and name it YourInitials_PartofAssignmentYoureWorkingOn
-6. Make sure you are now in the new branch you just created; it should have the same content as the main branch for now
+6. Make sure you are now in the new branch you just created; it should have the same content as tCancel changeshe main branch for now
 7. Open Eclipse
 8. Create a new Java Project 
 9. In Finder, find your local "Github" folder 
